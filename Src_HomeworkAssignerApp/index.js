@@ -2,10 +2,23 @@ import express from 'express';
 import methodOverride from 'method-override';
 import cookieParser from 'cookie-parser';
 
-import {handleHomePageDisplayRequest} from './httpGeneralRequestHandler.js'
-import {handleNewUserFormDisplayRequest, handleEditUserRequest, handleLoginFormDisplayRequest, handleLoginRquest, handleLogoutRequest, handleGetAllUsersRequest, handleUserByIDRequest} from './httpUserHandler.js';
-import {handleGetAllHomeworksByUserIDRequest, handleNewHomeworkDisplayRequest, handleNewHomeworkSubmitRequest, handleDisplayHomeworkByIDRequest, handleEditHomeworkFormDisplayRequest, handleEditHomeworkSubmitRequest, handleDisplayAnswerSubmitFormRequest, handleAnswerSubmitRequest} from './httpHomeworkHandler.js';
-import {handleNewCommentRequest, handleNewReplyCommentRequest, handleEditCommentRequest} from './httpCommentHandler.js';
+import {
+  handleNewUserFormDisplayRequest, handleNewUserCreateRequest,
+  handleEditUserFormDisplayRequest, handleEditUserRequest, handleLoginFormDisplayRequest,
+  handleLoginRquest, handleLogoutRequest, handleGetAllUsersRequest, handleHomePageDisplayRequest,
+  handleSearchUserFormDisplayRequest, handleDeleteRequest, handleSearchUserRequest,
+} from './httpUserHandler.js';
+import {
+  handleGetAllHomeworksByUserIDRequest, handleNewHomeworkDisplayRequest,
+  handleNewHomeworkSubmitRequest, handleSearchHomeworkFormDisplayRequest,
+  handleSearchHomeworkRequest, handleDisplayHomeworkByIDRequest,
+  handleEditHomeworkFormDisplayRequest, handleEditHomeworkSubmitRequest,
+  handleDisplayAnswerSubmitFormRequest, handleAnswerSubmitRequest,
+} from './httpHomeworkHandler.js';
+import {
+  handleNewCommentRequest, handleNewReplyCommentRequest,
+  handleEditCommentRequest,
+} from './httpCommentHandler.js';
 
 const PORT = process.argv[2];
 
@@ -30,25 +43,40 @@ app.use(express.static('uploads'));
 /**
  * Home Page
  */
-app.get('/',handleHomePageDisplayRequest);
+app.get('/', handleHomePageDisplayRequest);
 
 /**
  * User Account Creation, Login and Logout
  */
+// To get the list of current users in the system
+app.get('/all-users', handleGetAllUsersRequest);
+
+// To view the details of a user
+app.get('/user/:id/edit', handleEditUserFormDisplayRequest);
+// Accept a PUT request to edit a user.
+app.put('/user/:id/edit', handleEditUserRequest);
+
+// To search for a user using given field
+app.get('/search-user', handleSearchUserFormDisplayRequest);
+app.post('/search-user', handleSearchUserRequest);
+
+// To delete a user
+app.put('/user/:id/delete', handleDeleteRequest);
+
 // Render a form that will sign up a user.
 app.get('/new-user', handleNewUserFormDisplayRequest);
-// Accept a POST request to create a user.
-app.post('/edit-user', handleEditUserRequest);
+// Accept a POST request to create new user
+app.post('/new-user', handleNewUserCreateRequest);
+
+/**
+ * User Login, logout request handling
+ */
 // Render a form that will log a user in.
 app.get('/login', handleLoginFormDisplayRequest);
 // Accept a POST request to log a user in.
 app.post('/login', handleLoginRquest);
 // Log a user out. Get rid of their cookie.
 app.delete('/logout', handleLogoutRequest);
-// To get the list of current users in the system
-app.get('/all-users', handleGetAllUsersRequest)
-// To get the details of a specific user
-app.get('/user/:id', handleUserByIDRequest)
 
 /**
  * Homework requests
@@ -60,7 +88,12 @@ app.get('/list-homeworks', handleGetAllHomeworksByUserIDRequest);
 // New homework form display request
 app.get('/newhw', handleNewHomeworkDisplayRequest);
 // New homework submit request
-app.get('/newhw', handleNewHomeworkSubmitRequest);
+app.post('/newhw', handleNewHomeworkSubmitRequest);
+
+// For search display form
+app.get('/search-hw', handleSearchHomeworkFormDisplayRequest);
+app.post('/search-hw', handleSearchHomeworkRequest);
+
 // Display details of a homework
 app.get('homework/:id', handleDisplayHomeworkByIDRequest);
 // Render a form to edit a homework.
@@ -83,3 +116,5 @@ app.post('/homework/:id/comment/:cmt_id', handleEditCommentRequest);
  */
 app.get('/submit/:id', handleDisplayAnswerSubmitFormRequest);
 app.post('/submit/:id', handleAnswerSubmitRequest);
+
+app.listen(PORT);

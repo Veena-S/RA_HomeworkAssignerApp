@@ -1,0 +1,50 @@
+body {
+  /* line-height: 1.5em !important; */
+  background-color: rgba(6, 141, 134, 0.301);
+}
+
+.cust-nav-color {
+  /* background-color: rgb(56, 87, 35) !important;
+  color: olive !important; */
+  background-color: darkslategray !important;
+  color: lightseagreen !important;
+}
+
+.cust-nav-btn {
+  background-color: rgb(226, 240, 217);
+  color: rgb(15, 32, 4) !important;
+}
+
+.cust-nav-list {
+  color: rgb(171, 224, 141) !important;
+}
+
+.cust-jumbotron {
+  /* background-color: rgb(24, 49, 5);
+  color: darkseagreen; */
+  background-color: #097686;
+  color: rgb(26, 231, 231);
+  margin: 0 4 0 4;
+}
+
+.cust-border-round {
+  border-radius: 4px;
+}
+
+/*
+set z-index to a value > 1, and had to set position: relative; on the element to make it clickable on top of the stretched-link.
+*/
+.btn-over-stretched {
+  z-index: 2;
+  position: relative;
+}
+
+.btn-over-stretched:hover {
+  background-color: rgb(199, 235, 238);
+}
+
+.list-group-item-action:hover {
+  font-size: large;
+  font-weight: 600;
+  font-style: italic;
+}

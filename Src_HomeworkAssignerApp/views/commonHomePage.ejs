@@ -1,0 +1,47 @@
+<html>
+  <%- include('headerIncludes'); -%>
+  <body>
+    <% if(roles.length === 0) {%> 
+    <%- include('navbar', {displayPage: 'onlyHomePage', userName: userName, user: roles}); -%>
+    <p>CommonHomePage</p>
+    <div class="jumbotron cust-jumbotron">
+      <p class="h6">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
+            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
+            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
+            vestibulum.
+      </p>
+    </div>
+  <% } else if(roles[1] === 4 ) { %> <!--If the user is an admin-->
+        <!--Check if user is a teacher with Admin privilege-->
+      <% if(roles[0] === 1){ %>
+        <!--Display options for teacher also-->
+        <%- include('adminUserPage', {userName: userName, user: roles}); -%>
+      <% } else if( roles[0] === 3){ %>
+        <!--Non teaching Staff with Admin privilege-->
+        <%- include('adminUserPage', { userName: userName, user: roles}); -%>
+      <% } else {%>
+        <%- include('messagePage', { message: 'Unknown User!', from: 'ejs' }); -%> 
+      <% }%>
+      <!--user = admin ends here-->
+    <% } else{%> 
+      <!--If the given user is not an admin-->
+      <% if(roles[0] === 1){ %>
+      <!--if teacher-->
+      <!--Display options for teacher-->
+      <%- include('teacherUserPage', {userName: userName, user: roles}); -%>
+      <% } else if( roles[0] === 2){ %>
+      <!--Student-->
+      <%- include('studentUserPage', {userName: userName, user: roles}); -%>
+      <% } else if( roles[0] === 3){ %>
+      <!--Non teaching Staff -->
+      <%- include('otherUserPage', {userName: userName, user: roles}); -%>
+      <% } else {%>
+        <%#- include('messagePage', { message: 'Unknown User!', from: 'ejs' }); -%> 
+        <%- include('otherUserPage', {userName: userName, user: roles}); -%>
+      <%}%>
+    <% }%><!--else (user = admin) ends here-->
+
+    <%- include('footerIncludes'); -%>
+  </body>
+</html>

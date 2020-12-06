@@ -1,0 +1,39 @@
+    <%- include('navbar', {displayPage: 'userPage', userName: userName, user: roles}); -%>
+    <div class="row justify-content-center cust-jumbotron cust-border-round m-5">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <p class="h6">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
+            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
+            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
+            vestibulum.
+        </p>
+      </div>
+      <div class="col-sm-2"></div>
+      
+    </div>
+    <div class="row no-gutters position-relative m-4 cust-border-round">
+      <div class="col-sm-2"></div>
+      <div class="card-deck col-sm-8 justify-content-between">
+       <div class="card col-sm-5 position-static bg-transparent border-0 pt-sm-2">
+        <div class="card-body bg-info cust-border-round">
+          <h5 class="card-title">Administration</h5>
+            <div class="list-group">
+              <a href="/all-users" class="list-group-item list-group-item-action list-group-item-info border-0 py-1" role="button">Current Users</a>
+              <a href="/new-user" class="list-group-item list-group-item-action list-group-item-info border-0 py-1">Add New User</a>
+              <a href="/search-user" class="list-group-item list-group-item-action list-group-item-info border-0 py-1">Search User</a>
+            </div>
+          </div>
+          <!-- <div class="card-footer border-0">
+            <small class="text-muted"></small>
+          </div> -->
+      </div>
+      <!--Check whether the user is a teacher also-->
+      <% if(roles[0] === 1) {%> 
+        <%- include('adminTeacherUserPage') -%> ;
+      <% } %> 
+    </div>
+    <div class="col-sm-2"></div>
+  </div>
+
+  

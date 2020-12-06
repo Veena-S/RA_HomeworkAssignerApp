@@ -1,0 +1,52 @@
+<html>
+  <%- include('headerIncludes'); -%>
+  <body>
+    <%- include('navbar', {displayPage: 'adminPage', userName: userName, user: roles}); -%>
+    <h4 class="h4 text-center mt-4 mb-4">Register New User</h4>
+    <div class="container">
+      <form action="/new-user" method="POST">
+        <!--
+          {userTableColNames,allSubjectsAndGrades,userName: loggedInUserName, 
+            roles:loggedInUserRoles,newUserRoles,}
+        -->
+        <!--Display the items in userTableColNames-->
+        <!--Column description is set as Key, while column names are set as values in the object-->
+        <% Object.keys(userTableColNames).forEach((colDescription, index) => {%>
+        <div class="row form-row form-group">
+          <label for="Property_<%=index%>" class="col-sm-3 col-form-label"
+            ><%= colDescription%>:
+          </label>
+          <div class="col-sm-8">
+            <% if( colDescription == 'Address' ) {%>
+            <textarea
+              type="text"
+              id="Property_<%=index%>"
+              class="form-control"
+              name="<%= userTableColNames[colDescription] %>"
+            ></textarea>
+            <% } else { %>
+            <input
+              type="text"
+              id="Property_<%=index%>"
+              class="form-control"
+              name="<%= userTableColNames[colDescription] %>"
+              required
+            />
+            <% } %>
+          </div>
+        </div>
+        <% }) %>
+        <!--Display Grades Selection Box-->
+        <% if(allSubjectsAndGrades.dataSubjectGrade !== undefined){ %> 
+          <%- include('gradeSelectList', {dataSubjectGrade: allSubjectsAndGrades.dataSubjectGrade}) -%>
+        <% } %> 
+
+        <!--Display Role list check box-->
+        <%- include('roleCheckbox', {roles: newUserRoles} ) -%>
+
+        <input type="submit" class="btn btn-dark" value="Submit" />
+      </form>
+    </div>
+    <%- include('footerIncludes'); -%>
+  </body>
+</html>

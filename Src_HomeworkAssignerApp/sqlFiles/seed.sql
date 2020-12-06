@@ -12,7 +12,9 @@ INSERT INTO Subjects (subject_name, grade ) VALUES ('History', 'S2');
 
 -- Users
 INSERT INTO Users (user_name, first_name, last_name, email, password, contact_number,
-  address, role, admin, institution_id  ) VALUES ('kathy_clair', 'Kathy', 'Clair', 'kathyclair@myschool.com', 'kathy@123', '+85-123123', 'Somewhere, Street1, You know where', 1, TRUE, 'A01101T');
+  address, role, admin, institution_id  ) VALUES ('kathy_clair', 'Kathy', 'Clair', 'kathyclair@myschool.com', '0486a7b7a57e69ca2b294e88a33b3d6925d550d32764b3edd002366e06540ab3926d275d1c4e2d5c34100061a4796e3d72754503be54b78308360f07f3ce074a', '+85-123123', 'Somewhere, Street1, You know where', 1, TRUE, 'A01101T');
+
+  -- Hashed Value of kathy@123 = 0486a7b7a57e69ca2b294e88a33b3d6925d550d32764b3edd002366e06540ab3926d275d1c4e2d5c34100061a4796e3d72754503be54b78308360f07f3ce074a
 
 
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 1);

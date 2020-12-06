@@ -1,52 +1,105 @@
-
 const db_config = {
-  DB_NAME: 'homework_assigner',
+  dbName: 'homework_assigner',
 
-  TABLE_SUBJECTS: 'Subjects',
-  COL_ID: 'id',
-  COL_SUBJECT_NAME: 'subject_name',
-  COL_GRADE: 'grade',
+  tableSubjects: 'Subjects',
+  colID: 'id',
 
-  TABLE_USERS: 'Users',
-  COL_USER_NAME: 'user_name',
-  COL_FIRST_NAME: 'first_name',
-  COL_LAST_NAME: 'last_name',
-  COL_EMAIL: 'email',
-  COL_PASSWORD: 'password',
-  COL_CONTACT_NUMBER: 'contact_number',
-  COL_ADDRESS: 'address',
-  COL_ROLE: 'role',
-  COL_ADMIN: 'admin',
-  COL_INST_ID: 'institution_id', 
+  colSubjectName: 'subject_name',
+  descSubjectName: 'Subject',
 
+  colGrade: 'grade',
+  descGrade: 'Grade',
 
-  TABLE_USERS_SUBJECTS: 'User_Subjects',
-  COL_USER_ID: 'user_id',
-  COL_SUB_ID: 'subject_id', 
+  tableUsers: 'Users',
+  colUserName: 'user_name',
+  descUserName: 'User Name',
 
+  colFirstName: 'first_name',
+  descFirstName: 'First Name',
 
-  TABLE_HOMEWORKS: 'Homeworks', 
-  COL_TEACHER_ID: 'teacher_id',
-  COL_HWRK_DESC: 'homework_desc',
-  COL_FILE_PATH: 'filepath',
-  COL_CREATED_AT: 'created_at',
-  COL_CURRENT_STATUS: 'current_status',
-  COL_EDITED_AT: 'edited_at',
+  colLastName: 'last_name',
+  descLastName: 'Last Name',
 
+  colEmail: 'email',
+  descEmail: 'E-mail',
 
-  TABLE_COMMENTS: 'Comments',
-  COL_COMMENTER_ID:  'commenter_id',
-  COL_HWRK_ID:  'homework_id',
-  COL_PREV_CMT_ID:  'previous_comment_id',
-  COL_POSTED_AT:  'posted_at',
-  COL_COMMENTS:  'comments', 
+  colPassword: 'password',
+  descPassword: 'Password',
 
+  colContactNumber: 'contact_number',
+  descContactNumber: 'Contact Number',
 
-  TABLE_SUBMISSIONS: 'Submissions',
-  COL_STUDENT_ID: 'student_id',
-  COL_DESC: 'description',
-  COL_SUBMITTED_AT: 'submitted_at',
+  colAddress: 'address',
+  descAddress: 'Address',
 
+  colRole: 'role',
+  descRole: 'Role',
+
+  colAdmin: 'admin',
+  descAdmin: 'Admin',
+
+  colInstID: 'institution_id',
+  descInstID: 'Institution ID',
+
+  colJoiningDate: 'joining_date',
+  descJoiningDate: 'Joining Date',
+
+  tableUserSubjects: 'User_Subjects',
+  colUserID: 'user_id',
+  descUserID: 'User ID',
+
+  colSubID: 'subject_id',
+  descSubID: 'Subject ID',
+
+  tableHomeworks: 'Homeworks',
+  colTeacherID: 'teacher_id',
+  descTeacherID: 'Teacher ID',
+
+  colHwrkDesc: 'homework_desc',
+  descHwrkDesc: 'Homework Description',
+
+  colFilePath: 'filepath',
+  descFilePath: 'File',
+
+  colCreatedAt: 'created_at',
+  descCreatedAt: 'Created On',
+
+  colCurrentStatus: 'current_status',
+  descCurrentStatus: 'Current Status',
+
+  colEditedAt: 'edited_at',
+  descEditedAt: 'Edited On',
+
+  tableComments: 'Comments',
+  colCommenterID: 'commenter_id',
+  descCommenterID: 'Commenter',
+
+  colHwrkID: 'homework_id',
+  descHwrkID: 'Homework ID',
+
+  colPrevCmtID: 'previous_comment_id',
+  descPrevCmtID: 'previous_comment_id',
+
+  colPostedAt: 'posted_at',
+  descPostedAt: 'Posted On',
+
+  colComments: 'comments',
+  descComments: 'Comments',
+
+  tableSubmissions: 'Submissions',
+  colStudentID: 'student_id',
+  descStudentID: 'Student ID',
+
+  colDesc: 'description',
+  descDesc: 'Description',
+
+  colSubmittedAt: 'submitted_at',
+  descSubmittedAt: 'Submitted On',
+
+  roleTeacher: 1,
+  roleStudent: 2,
+  roleNonTeachingStaff: 3,
+  roleAdmin: 4,
 
 };
 

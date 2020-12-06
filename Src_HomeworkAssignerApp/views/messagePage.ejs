@@ -1,0 +1,21 @@
+<% if(from === 'ejs') {%>
+  <%- include('navbar', {displayPage: 'messagePage', userName: userName, user: roles}); -%>
+  <div class="container">
+      <div class="row">
+        <p><%=message%></p>
+      </div>
+    </div>
+<%  } else if(from === 'js' ){%> 
+  <html>
+  <%- include('headerIncludes'); -%>
+  <body>
+    <%- include('navbar', {displayPage: 'messagePage', userName: userName, user: roles}); -%>
+    <div class="container">
+      <div class="row">
+        <p><%=message%></p>
+      </div>
+    </div>
+    <%- include('footerIncludes'); -%>
+  </body>
+</html>
+<% } %> 

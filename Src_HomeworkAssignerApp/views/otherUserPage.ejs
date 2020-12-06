@@ -1,0 +1,32 @@
+<html>
+  <%- include('headerIncludes'); -%>
+  <body>
+    <% if(displayPage === 'homePage') {%>
+    <!---->
+    <%- include('navbar', {displayPage: 'onlyHomePage', userName: userName,
+    user: ''}); -%>
+    <h4 class="h4 text-center mt-4 mb-4">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
+      mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
+      convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
+      vestibulum.
+    </h4>
+    <% } else if(displayPage === 'userPage') {%>
+    <!--roles have info on user type and admin level-->
+    <%- include('navbar', {displayPage: 'userPage', userName: userName, user:
+    roles}); -%>
+    <div></div>
+    <% } else{ %>
+    <div></div>
+    <% } %>
+
+    <h4 class="h4 text-center mt-4 mb-4">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
+      mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
+      convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
+      vestibulum.
+    </h4>
+    <div class="container"></div>
+    <%- include('footerIncludes'); -%>
+  </body>
+</html>

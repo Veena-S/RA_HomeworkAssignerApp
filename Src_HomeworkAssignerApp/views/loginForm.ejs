@@ -1,0 +1,80 @@
+<div class="container modal fade" id="login-modal-form" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Login form</h2>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <%if(displayType === 'login') { %>
+      <div class="modal-body">
+        <form action="/login" method="POST" id="login-modal-details">
+          <% if(Object.keys(loginFormDetails).length !== 0){ %>
+          <!--Continue only if specific inputs are given-->
+          <% Object.keys(loginFormDetails).forEach((description, index) => { %>
+          <div class="form-row">
+            <label for="<%=description%>"><%=description%></label>
+            <input type=<% (description === 'E-mail') ? "email" : ((description
+            === "Password") ? "password" : "text" ) %> class="form-control"
+            id="<%=description%>" name="<%=loginFormDetails[description]%>"
+            placeholder="<%=description%>" />
+          </div>
+          <% }) %>
+          <!--end of if length !== 0 -->
+          <% } else {%>
+          <!--If no input values are given, go for default-->
+          <label for="userName">User Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="userName"
+            name="user_name"
+            placeholder="User Name"
+          />
+
+          <label for="inputEmail">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="inputEmail"
+            name="email"
+            placeholder="Email"
+          />
+
+          <label for="inputPassword">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="inputPassword"
+            name="password"
+            placeholder="Password"
+          />
+          <% } %>
+        </form>
+      </div>
+      <!--Submit form button-->
+      <div class="modal-footer">
+        <button
+          type="submit"
+          class="btn btn-secondary"
+          form="login-modal-details"
+        >
+          Login
+        </button>
+      </div>
+      <% } else if(displayType === 'login-done') {%>
+      <!--Login is completed. Show the success message in the popup-->
+      <div class="modal-body">
+        <p>Successfully logged in!!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+      <% }%>
+    </div>
+    <!--Modal content ends-->
+  </div>
+</div>

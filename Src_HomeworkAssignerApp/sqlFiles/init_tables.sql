@@ -15,9 +15,10 @@ CREATE TABLE Users (
   password TEXT UNIQUE,
   contact_number TEXT UNIQUE,
   address TEXT,
-  role INTEGER, -- teacher = 1 / student = 2
+  role SMALLINT CHECK ( role >= 0 AND role < 4), -- teacher = 1 / student = 2 / non-teaching = 3
   admin BOOLEAN,
-  institution_id TEXT UNIQUE
+  institution_id TEXT UNIQUE,
+  joining_date DATE DEFAULT NOW()
 );
 
 CREATE TABLE User_Subjects (

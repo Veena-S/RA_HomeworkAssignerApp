@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark cust-nav-color">
   <a href="/" class="navbar-brand">Logo</a>
   <button
     class="navbar-toggler"
@@ -8,15 +8,69 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarMenu">
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto cust-nav-list">
+
+      <!--If roles is empty, it means no user is logged in-->
+      <% if(roles.length === 0) {%> 
+        <li class="nav-item">
+        <a
+          href="/login"
+          class="nav-link btn-sm cust-nav-btn"
+          data-toggle="modal"
+          data-target="#login-modal-form"
+          >Login</a
+        >
+      </li>
+      <%} else {%> <!--Somebody is already logged in-->
+        <span class="navbar-text mr-3"> Welcome <%=userName%>!!</span>
+          <li>
+            <a href="/logout" class="nav-link btn-secondary btn-sm">Logout</a>
+          </li>
+      <%}%>
       <li class="nav-item">
         <a href="/about" class="nav-link">About</a>
       </li>
-      <% if(displayPage === 'onlyHomePage') {%>
-      <li class="nav-item">
-        <a href="/Sign-in" class="nav-link">Sign-in</a>
-      </li>
-      <% } else{ %> <% } %>
     </ul>
   </div>
 </nav>
+<%if(roles.length === 0) {%>
+<!---->
+<%-include('loginForm', { displayType: 'login', loginFormDetails : {} })-%>
+<!---->
+<% } else { %>
+<!---->
+<%-include('loginForm', { displayType: 'login-done', loginFormDetails : {} })-%>
+<% }  %>
+
+<!------------------------------------------------------------------------------------------------->
+
+<!--If the user is an admin-->
+    <%# if(roles[1] === 4 ) { %>
+        <!--Check if user is a teacher with Admin privilege-->
+      <%# if(roles[0] === 1){ %>
+        <!--Display options for teacher also-->
+        <%#- include('adminTeacherUserPage', {userName: userName, user: roles}); -%>
+      <%# } else if( roles[0] === 3){ %>
+        <!--Non teaching Staff with Admin privilege-->
+        <%#- include('adminUserPage', { userName: userName, user: roles}); -%>
+      <%# } else {%>
+        <%#- include('messagePage', { message: 'Unknown User!', from: 'ejs' }); -%> 
+      <%# }%>
+      <!--user = admin ends here-->
+    <%# } else{%> 
+      <!--If the given user is not an admin-->
+      <%# if(roles[0] === 1){ %>
+      <!--if teacher-->
+      <!--Display options for teacher-->
+      <%#- include('teacherUserPage', {userName: userName, user: roles}); -%>
+      <%# } else if( roles[0] === 2){ %>
+      <!--Student-->
+      <%#- include('studentUserPage', {userName: userName, user: roles}); -%>
+      <%# } else if( roles[0] === 3){ %>
+      <!--Non teaching Staff -->
+      <%#- include('otherUserPage', {userName: userName, user: roles}); -%>
+      <%# } else {%>
+        <%#- include('messagePage', { message: 'Unknown User!', from: 'ejs' }); -%> 
+        <%#- include('otherUserPage', {userName: userName, user: roles}); -%>
+      <%#}%>
+    <%# }%><!--else (user = admin) ends here-->
