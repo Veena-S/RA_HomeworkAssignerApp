@@ -31,6 +31,7 @@ CREATE TABLE Homeworks (
   id SERIAL PRIMARY KEY,
   subject_id INTEGER,
   teacher_id INTEGER,
+  title TEXT,
   homework_desc TEXT,
   filepath TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

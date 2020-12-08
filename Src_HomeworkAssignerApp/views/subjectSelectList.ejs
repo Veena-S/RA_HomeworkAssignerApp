@@ -1,0 +1,22 @@
+<!--Subject selection box-->
+<%if(distinctSubjectsList.length !== 0 ){%>
+<div class="row form-row form-group">
+  <label for="subject_name" class="col-sm-3 col-form-label">Subject:</label>
+  <div class="col-sm-8">
+    <select name="subject_name" id="subject_name">
+      <%distinctSubjectsList.forEach((rowSubject) => {%>
+        <% if(existingData !=== undefinded) {%> 
+          <% if( rowSubject.subject_name === existingData.subject_name ) { %> 
+            <option value="<%=rowSubject.subject_name%>"><%= rowSubject.subject_name selected%></option>
+          <% } else {%> 
+            <option value="<%=rowSubject.subject_name%>"><%= rowSubject.subject_name %></option>            
+          <% } %> 
+        <% } else {%> 
+          <!--Value in "value" will be submitted. Not name.-->
+          <option value="<%=rowSubject.subject_name%>"><%= rowSubject.subject_name %></option>
+        <% } %> 
+      <%});%>
+    </select>
+  </div>
+</div>
+<%}%>

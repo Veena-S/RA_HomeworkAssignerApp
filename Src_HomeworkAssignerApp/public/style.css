@@ -1,6 +1,6 @@
 body {
   /* line-height: 1.5em !important; */
-  background-color: rgba(6, 141, 134, 0.301);
+  /* background-color: rgba(31, 241, 231, 0.301); */
 }
 
 .cust-nav-color {
@@ -22,8 +22,8 @@ body {
 .cust-jumbotron {
   /* background-color: rgb(24, 49, 5);
   color: darkseagreen; */
-  background-color: #097686;
-  color: rgb(26, 231, 231);
+  background-color: #02444e;
+  color: rgb(200, 241, 241);
   margin: 0 4 0 4;
 }
 

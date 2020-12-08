@@ -1,6 +1,9 @@
 import express from 'express';
 import methodOverride from 'method-override';
 import cookieParser from 'cookie-parser';
+import multer from 'multer';
+
+import { authenticateRequestUsingCookies } from './httpGeneralRequestHandler.js';
 
 import {
   handleNewUserFormDisplayRequest, handleNewUserCreateRequest,
@@ -9,16 +12,19 @@ import {
   handleSearchUserFormDisplayRequest, handleDeleteRequest, handleSearchUserRequest,
 } from './httpUserHandler.js';
 import {
-  handleGetAllHomeworksByUserIDRequest, handleNewHomeworkDisplayRequest,
+  handleGetAllHomeworksByUserRequest, handleNewHomeworkDisplayRequest,
   handleNewHomeworkSubmitRequest, handleSearchHomeworkFormDisplayRequest,
   handleSearchHomeworkRequest, handleDisplayHomeworkByIDRequest,
   handleEditHomeworkFormDisplayRequest, handleEditHomeworkSubmitRequest,
-  handleDisplayAnswerSubmitFormRequest, handleAnswerSubmitRequest,
+  handleDeleteHomeworkRequest,
 } from './httpHomeworkHandler.js';
 import {
   handleNewCommentRequest, handleNewReplyCommentRequest,
   handleEditCommentRequest,
 } from './httpCommentHandler.js';
+import { handleDisplayAnswerSubmitFormRequest, handleAnswerSubmitRequest } from './httpSubmissionHandler.js';
+
+import db_config from './constants.js';
 
 const PORT = process.argv[2];
 
@@ -26,6 +32,9 @@ const app = express();
 
 // a library cookie-parser to parse the cookie string value in the header into a JavaScript Object.
 app.use(cookieParser());
+
+// Set the name of the upload directory
+const multerUpload = multer({ dest: 'uploads/' });
 
 // Set the view engine to generate HTML responses through ejs files in view directory
 app.set('view engine', 'ejs');
@@ -43,13 +52,13 @@ app.use(express.static('uploads'));
 /**
  * Home Page
  */
-app.get('/', handleHomePageDisplayRequest);
+app.get('/', authenticateRequestUsingCookies, handleHomePageDisplayRequest);
 
 /**
  * User Account Creation, Login and Logout
  */
 // To get the list of current users in the system
-app.get('/all-users', handleGetAllUsersRequest);
+app.get('/all-users', authenticateRequestUsingCookies, handleGetAllUsersRequest);
 
 // To view the details of a user
 app.get('/user/:id/edit', handleEditUserFormDisplayRequest);
@@ -64,9 +73,9 @@ app.post('/search-user', handleSearchUserRequest);
 app.put('/user/:id/delete', handleDeleteRequest);
 
 // Render a form that will sign up a user.
-app.get('/new-user', handleNewUserFormDisplayRequest);
+app.get('/new-user', authenticateRequestUsingCookies, handleNewUserFormDisplayRequest);
 // Accept a POST request to create new user
-app.post('/new-user', handleNewUserCreateRequest);
+app.post('/new-user', authenticateRequestUsingCookies, handleNewUserCreateRequest);
 
 /**
  * User Login, logout request handling
@@ -84,22 +93,23 @@ app.delete('/logout', handleLogoutRequest);
 // To display the complete list of homework for a specific user
 // Filtering by Subject & Grade
 // Sorting by Latest order
-app.get('/list-homeworks', handleGetAllHomeworksByUserIDRequest);
+app.get('/list-homeworks', authenticateRequestUsingCookies, handleGetAllHomeworksByUserRequest);
 // New homework form display request
-app.get('/newhw', handleNewHomeworkDisplayRequest);
+app.get('/newhw', authenticateRequestUsingCookies, handleNewHomeworkDisplayRequest);
 // New homework submit request
-app.post('/newhw', handleNewHomeworkSubmitRequest);
+app.post('/newhw', multerUpload.single(db_config.colFilePath), authenticateRequestUsingCookies, handleNewHomeworkSubmitRequest);
 
 // For search display form
 app.get('/search-hw', handleSearchHomeworkFormDisplayRequest);
 app.post('/search-hw', handleSearchHomeworkRequest);
 
 // Display details of a homework
-app.get('homework/:id', handleDisplayHomeworkByIDRequest);
+app.get('homework/:id', authenticateRequestUsingCookies, handleDisplayHomeworkByIDRequest);
 // Render a form to edit a homework.
-app.get('/homework/:id/edit', handleEditHomeworkFormDisplayRequest);
+app.get('/homework/:id/edit', authenticateRequestUsingCookies, handleEditHomeworkFormDisplayRequest);
 // Accept a request to edit a single homework
-app.put('/homework/:id/edit', handleEditHomeworkSubmitRequest);
+app.put('/homework/:id/edit', multerUpload.single(db_config.colFilePath), authenticateRequestUsingCookies, handleEditHomeworkSubmitRequest);
+app.delete('/homework/:id/delete', authenticateRequestUsingCookies, handleDeleteHomeworkRequest);
 
 /**
  * Comment requests handling

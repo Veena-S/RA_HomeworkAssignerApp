@@ -55,6 +55,9 @@ const db_config = {
   colTeacherID: 'teacher_id',
   descTeacherID: 'Teacher ID',
 
+  colTitle: 'title',
+  descTitle: 'Title',
+
   colHwrkDesc: 'homework_desc',
   descHwrkDesc: 'Homework Description',
 
@@ -100,6 +103,11 @@ const db_config = {
   roleStudent: 2,
   roleNonTeachingStaff: 3,
   roleAdmin: 4,
+
+  statusActive: 'Active',
+  statusClosed: 'Closed',
+
+  fileName: 'fileName',
 
 };
 

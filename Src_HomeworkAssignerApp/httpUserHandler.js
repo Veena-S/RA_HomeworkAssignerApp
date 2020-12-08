@@ -1,14 +1,13 @@
-import { request, response } from 'express';
 import jsSHA from 'jssha';
-import db_config from './constants.js';
+import dbConfig from './constants.js';
 import {
   createNewUser, getAllSubjectAndGrades, getAllUsers, getUserInfoByGivenField,
 } from './psqlDataHandler.js';
 
 const saltEnvVar = process.env.SALT_ENV_VAR;
 
-let loggedInUserName = '';
-let loggedInUserRoles = '';
+// let loggedInUserName = '';
+// let loggedInUserRoles = '';
 
 // Function to detect the role of the user, based on the info retrieved from database
 // 0 = not a valid user
@@ -16,23 +15,23 @@ let loggedInUserRoles = '';
 // 2 = student
 // 3 = non-teaching staff
 // Returned will be an array of role +- admin
-const detectUserRole = (dbUserInfo) => {
+export const detectUserRole = (dbUserInfo) => {
   let role;
-  if ((dbUserInfo[db_config.colRole] === db_config.roleTeacher
-    && (dbUserInfo[db_config.colAdmin] === true)))
+  if ((dbUserInfo[dbConfig.colRole] === dbConfig.roleTeacher
+    && (dbUserInfo[dbConfig.colAdmin] === true)))
   {
     // teacher + admin
-    role = [db_config.roleTeacher, db_config.roleAdmin];
+    role = [dbConfig.roleTeacher, dbConfig.roleAdmin];
   }
-  else if ((dbUserInfo[db_config.colRole] === db_config.roleNonTeachingStaff
-    && (dbUserInfo[db_config.colAdmin] === true))) {
+  else if ((dbUserInfo[dbConfig.colRole] === dbConfig.roleNonTeachingStaff
+    && (dbUserInfo[dbConfig.colAdmin] === true))) {
     // non teaching staff + admin
-    role = [db_config.roleNonTeachingStaff, db_config.roleAdmin];
+    role = [dbConfig.roleNonTeachingStaff, dbConfig.roleAdmin];
   }
-  else if (dbUserInfo[db_config.colRole] === db_config.roleStudent)
+  else if (dbUserInfo[dbConfig.colRole] === dbConfig.roleStudent)
   {
     // student + no admin
-    role = [db_config.roleStudent, 0];
+    role = [dbConfig.roleStudent, 0];
   }
   else {
     // not a user
@@ -50,7 +49,7 @@ const detectUserRole = (dbUserInfo) => {
  *
  * This function generates the hashed value of the specified value.
  */
-const generatedHashedValue = (unhashedValueInput, useSalt) => {
+export const generatedHashedValue = (unhashedValueInput, useSalt) => {
   /**
    * Hashing passwords using jsSHA library
    */
@@ -60,6 +59,7 @@ const generatedHashedValue = (unhashedValueInput, useSalt) => {
     unhashedValue += `-${saltEnvVar}`;
   }
   // initialise the SHA object
+  // eslint-disable-next-line new-cap
   const shaObj = new jsSHA('SHA-512', 'TEXT', { encoding: 'UTF8' });
   // input the password from the request to the SHA object
   shaObj.update(unhashedValue);
@@ -67,6 +67,28 @@ const generatedHashedValue = (unhashedValueInput, useSalt) => {
   const hashedValue = shaObj.getHash('HEX');
   console.log(`UnhashedValue: ${unhashedValue}, HashedValue: ${hashedValue}`);
   return hashedValue;
+};
+
+// Function that validates the user id specified in the login details
+export const extractLoggedInFieldDetails = (loginData) => {
+  console.log(loginData);
+  // if any of the field, user name or email is specified, proceed with login
+  let fieldName = '';
+  let fieldValue = '';
+  if (loginData.inputUserName.length !== 0)
+  {
+    fieldName = dbConfig.colUserName;
+    fieldValue = loginData.inputUserName;
+  } else {
+    if (loginData.inputEmail.length === 0)
+    {
+      console.log('Neither user name nor email given for logging in');
+      return { fieldName: '', fieldValue: '' };
+    }
+    fieldName = dbConfig.colEmail;
+    fieldValue = loginData.inputEmail;
+  }
+  return { fieldName, fieldValue };
 };
 
 /**
@@ -96,8 +118,8 @@ const validateAndLoginUser = (loginData, searchReturnUserInfoArray, response) =>
     response.status(300).render('messagePage', { message: 'Login failed!', from: 'js' });
     return;
   }
-  loggedInUserRoles = detectUserRole(userInfo);
-
+  let loggedInUserName;
+  const loggedInUserRoles = detectUserRole(userInfo);
   response.cookie('role', loggedInUserRoles);
   // If email was specified during login, use email in cookie.
   // Else use username.
@@ -106,18 +128,18 @@ const validateAndLoginUser = (loginData, searchReturnUserInfoArray, response) =>
     // create an unhashed cookie string based on user ID and salt
     const hashedCookieString = generatedHashedValue(loginData.inputEmail, true);
     // set the loggedInHash and username cookies in the response
-    response.cookie('loggedInBy', db_config.descEmail);
+    response.cookie('loggedInBy', dbConfig.descEmail);
     response.cookie('loggedInSession', hashedCookieString);
-    response.cookie('userInfo', userInfo[db_config.colEmail]);
-    loggedInUserName = userInfo[db_config.colEmail];
+    response.cookie('userInfo', userInfo[dbConfig.colEmail]);
+    loggedInUserName = userInfo[dbConfig.colEmail];
   } else {
     // create an unhashed cookie string based on user ID and salt
     const hashedCookieString = generatedHashedValue(loginData.inputUserName, true);
     // set the loggedInHash and username cookies in the response
-    response.cookie('loggedInBy', db_config.descUserName);
+    response.cookie('loggedInBy', dbConfig.descUserName);
     response.cookie('loggedInSession', hashedCookieString);
-    response.cookie('userInfo', userInfo[db_config.colUserName]);
-    loggedInUserName = userInfo[db_config.colUserName];
+    response.cookie('userInfo', userInfo[dbConfig.colUserName]);
+    loggedInUserName = userInfo[dbConfig.colUserName];
   }
 
   // end the request-response cycle
@@ -129,85 +151,85 @@ const validateAndLoginUser = (loginData, searchReturnUserInfoArray, response) =>
   });
 };
 
-/**
- *
- * @param {*} requestCookies - Cookies from the request
- *
- * This function validates the session, by checking the cookie values.
- * If cookies don't match, it will return false, else true.
- */
-export const validateCookies = (requestCookies) => {
-  console.log('validateCookies');
-  const {
-    role, loggedInBy, loggedInSession, userInfo,
-  } = requestCookies;
-  if (loggedInSession === undefined || userInfo === undefined)
-  {
-    return false;
-  }
-  // create hashed value for the user info provided.
-  const hashedUserInfo = generatedHashedValue(userInfo, true);
-  if (hashedUserInfo !== loggedInSession)
-  {
-    return false;
-  }
-  return true;
-};
-
-const displayNewUserForm = (allSubjectsAndGrades, response) => {
+const displayNewUserForm = (allSubjectsAndGrades, dbUserInfo, response) => {
   const userTableColNames = {
-    [db_config.descUserName]: db_config.colUserName,
-    [db_config.descInstID]: db_config.colInstID,
-    [db_config.descFirstName]: db_config.colFirstName,
-    [db_config.descLastName]: db_config.colLastName,
-    [db_config.descEmail]: db_config.colEmail,
-    [db_config.descPassword]: db_config.colPassword,
-    [db_config.descContactNumber]: db_config.colContactNumber,
-    [db_config.descAddress]: db_config.colAddress,
+    [dbConfig.descUserName]: dbConfig.colUserName,
+    [dbConfig.descInstID]: dbConfig.colInstID,
+    [dbConfig.descFirstName]: dbConfig.colFirstName,
+    [dbConfig.descLastName]: dbConfig.colLastName,
+    [dbConfig.descEmail]: dbConfig.colEmail,
+    [dbConfig.descPassword]: dbConfig.colPassword,
+    [dbConfig.descContactNumber]: dbConfig.colContactNumber,
+    [dbConfig.descAddress]: dbConfig.colAddress,
   };
   const newUserRoles = {
-    Teacher: db_config.roleTeacher,
-    Student: db_config.roleStudent,
-    Admin: db_config.roleAdmin,
-    NonTeachingStaff: db_config.roleNonTeachingStaff,
+    Teacher: dbConfig.roleTeacher,
+    Student: dbConfig.roleStudent,
+    Admin: dbConfig.roleAdmin,
+    NonTeachingStaff: dbConfig.roleNonTeachingStaff,
   };
 
   console.log('typeof allSubjectsAndGrades: ', typeof allSubjectsAndGrades);
-  if (allSubjectsAndGrades !== undefined)
-  {
-    console.log(allSubjectsAndGrades);
-    console.log('Object.entries(allSubjectsAndGrades): ', Object.entries(allSubjectsAndGrades));
-    // console.log('Object.entries(allSubjectsAndGrades.dataSubjectGrade): ',
-    // Object.entries(allSubjectsAndGrades.dataSubjectGrade));
-    console.log('Object.keys(allSubjectsAndGrades): ', Object.keys(allSubjectsAndGrades));
-
-    console.log('typeof allSubjectsAndGrades.dataSubjectGrade: ', typeof allSubjectsAndGrades.dataSubjectGrade); }
+  // if (allSubjectsAndGrades !== undefined)
+  // {
+  //   console.log(allSubjectsAndGrades);
+  //   console.log('Object.entries(allSubjectsAndGrades): ', Object.entries(allSubjectsAndGrades));
+  //   console.log('Object.entries(allSubjectsAndGrades.dataSubjectGrade): ',
+  //     Object.entries(allSubjectsAndGrades.dataSubjectGrade));
+  //   console.log('Object.keys(allSubjectsAndGrades): ', Object.keys(allSubjectsAndGrades));
+  //   console.log('typeof allSubjectsAndGrades.dataSubjectGrade: ',
+  //    typeof allSubjectsAndGrades.dataSubjectGrade);
+  // }
 
   response.render('newUserForm', {
     userTableColNames,
     allSubjectsAndGrades,
-    userName: loggedInUserName,
-    roles: loggedInUserRoles,
+    userName: dbUserInfo[dbConfig.colUserName],
+    roles: detectUserRole(dbUserInfo),
     newUserRoles,
   });
 };
 
-const displayAllUsersList = (allUsersSearchResultRows, response) => {
+const displayAllUsersList = (allUsersSearchResultRows, requestUserInfo, response) => {
   response.render('listAllUsers', {
     userData: allUsersSearchResultRows,
-    userName: loggedInUserName,
-    roles: loggedInUserRoles,
-    dbDescColNames: db_config,
+    userName: requestUserInfo[dbConfig.colUserName],
+    roles: detectUserRole(requestUserInfo),
+    dbDescColNames: dbConfig,
   });
+};
+
+const isRequestUserAmin = (request) =>
+{
+  // Validate User before displaying the new user form
+  if (!request.isUserLoggedIn)
+  {
+    return { isValid: false, msg: 'You are not logged in' };
+  }
+  // If a valid user, check whether it's a admin
+  if (!request.userInfo[dbConfig.colAdmin])
+  {
+    return { isValid: false, msg: 'You are not authorized.' };
+  }
+  return { isValid: true, msg: '' };
 };
 
 // Render a form that will sign up a user.
 export const handleNewUserFormDisplayRequest = (request, response) => {
   console.log('handleNewUserFormDisplayRequest');
+  // Validate User before displaying the new user form
+  // If a valid user, check whether it's a admin
+  const resValidity = isRequestUserAmin(request);
+  if (!resValidity.isValid)
+  {
+    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    return;
+  }
+
   // Get all the existing Subjects and respective grades
   getAllSubjectAndGrades(
     (allSubjectsAndGrades) => {
-      displayNewUserForm(allSubjectsAndGrades, response);
+      displayNewUserForm(allSubjectsAndGrades, request.userInfo, response);
     },
     (error) => {
       console.log(error);
@@ -218,16 +240,22 @@ export const handleNewUserFormDisplayRequest = (request, response) => {
 
 export const handleNewUserCreateRequest = (request, response) => {
   console.log('handleNewUserCreateRequest');
+  const resValidity = isRequestUserAmin(request);
+  if (!resValidity.isValid)
+  {
+    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    return;
+  }
 
-  console.log(`Before hashing: ${request.body[db_config.colPassword]}`);
+  console.log(`Before hashing: ${request.body[dbConfig.colPassword]}`);
   // set the hashed password back to the request, which will be set to users table in db
-  request.body[db_config.colPassword] = generatedHashedValue(request.body[db_config.colPassword],
+  request.body[dbConfig.colPassword] = generatedHashedValue(request.body[dbConfig.colPassword],
     false);
-  console.log(`After hashing: ${request.body[db_config.colPassword]}`);
+  console.log(`After hashing: ${request.body[dbConfig.colPassword]}`);
 
   createNewUser(request.body,
     (newUserData) => {
-      displayAllUsersList(newUserData, response);
+      displayAllUsersList(newUserData, request.userInfo, response);
     },
     (error) => {
       console.log(error);
@@ -238,11 +266,12 @@ export const handleNewUserCreateRequest = (request, response) => {
 export const handleEditUserFormDisplayRequest = (request, response) => {
   console.log('handleEditUserRequest');
   console.log(request.params.id);
+  console.log(request, response);
 };
 
 // Accept a POST request to create a user.
 export const handleEditUserRequest = (request, response) => {
-
+  console.log(request, response);
 };
 
 // Render a form that will log a user in.
@@ -250,9 +279,9 @@ export const handleLoginFormDisplayRequest = (request, response) => {
   console.log('handleLoginFormDisplayRequest');
 
   const loginFormDetails = {
-    [db_config.descUserName]: db_config.colUserName,
-    [db_config.descEmail]: db_config.colEmail,
-    [db_config.descPassword]: db_config.colPassword,
+    [dbConfig.descUserName]: dbConfig.colUserName,
+    [dbConfig.descEmail]: dbConfig.colEmail,
+    [dbConfig.descPassword]: dbConfig.colPassword,
   };
 
   response.render('loginForm', { displayType: 'login', loginFormDetails });
@@ -262,30 +291,21 @@ export const handleLoginFormDisplayRequest = (request, response) => {
 export const handleLoginRquest = (request, response) => {
   console.log('handleLoginRquest', request.body);
   const loginData = {
-    inputUserName: request.body[db_config.colUserName],
-    inputEmail: request.body[db_config.colEmail],
-    inputPassword: request.body[db_config.colPassword],
+    inputUserName: request.body[dbConfig.colUserName],
+    inputEmail: request.body[dbConfig.colEmail],
+    inputPassword: request.body[dbConfig.colPassword],
   };
   console.log(loginData);
-  // if any of the field, user name or email is specified, proceed with login
-  let fieldName = '';
-  let fieldValue = '';
-  if (loginData.inputUserName.length !== 0)
+
+  const fieldData = extractLoggedInFieldDetails(loginData);
+  if (fieldData.fieldName === '' || fieldData.fieldValue === '')
   {
-    fieldName = db_config.colUserName;
-    fieldValue = loginData.inputUserName;
-  } else {
-    if (loginData.inputEmail.length === 0)
-    {
-      console.log('Neither user name nor email given for logging in');
-      response.status(300).render('messagePage',
-        { message: 'Please login with User Name or email!!', from: 'js' });
-      return;
-    }
-    fieldName = db_config.colEmail;
-    fieldValue = loginData.inputEmail;
+    response.status(300).render('messagePage',
+      { message: 'Please login with User Name or email!!', from: 'js' });
+    return;
   }
-  getUserInfoByGivenField(fieldName, fieldValue, (searchResultRows) => {
+
+  getUserInfoByGivenField(fieldData.fieldName, fieldData.fieldValue, (searchResultRows) => {
     validateAndLoginUser(loginData, searchResultRows, response);
   },
   (searchError) => {
@@ -305,8 +325,15 @@ export const handleLogoutRequest = (request, response) => {
 
 // To get the list of current users in the system
 export const handleGetAllUsersRequest = (request, response) => {
+  const resValidity = isRequestUserAmin(request);
+  if (!resValidity.isValid)
+  {
+    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    return;
+  }
+
   getAllUsers(
-    (searchResultRows) => { displayAllUsersList(searchResultRows, response); },
+    (searchResultRows) => { displayAllUsersList(searchResultRows, request.userInfo, response); },
     (searchError) => {
       console.log(searchError);
       response.status(300).render('messagePage', { message: 'No existing users found!!', from: 'js' }); },
@@ -315,46 +342,39 @@ export const handleGetAllUsersRequest = (request, response) => {
 
 // To search for a user using given field
 export const handleSearchUserFormDisplayRequest = (request, response) => {
-
+  console.log(request, response);
 };
 
 export const handleSearchUserRequest = (request, response) => {
-
+  console.log(request, response);
 };
 
 // To delete a user using given field
 export const handleDeleteRequest = (request, response) => {
-
+  console.log(request, response);
 };
 
 // To get the details of a specific user
 export const handleUserByIDRequest = (request, response) => {
-
+  console.log(request, response);
 };
 
 export function handleHomePageDisplayRequest(request, response) {
-  console.log(request.body);
-  console.log('handleHomePageDisplayRequest');
-  console.log('Cookie validation.', request.cookies);
-  console.log(loggedInUserName, loggedInUserRoles);
-  // Validate the session is logged in or not using cookies
-  const {
-    role, loggedInBy, loggedInSession, userInfo,
-  } = request.cookies;
-  if (!validateCookies(request.cookies))
+  if (!request.isUserLoggedIn)
   {
-    console.log('Cookie validation failed');
+    // If there is no logged in data, it's assumed to be the
+    // simple homepage view request from anyone.
     response.render('commonHomePage', {
       displayPage: 'homePage',
-      userName: userInfo,
-      roles: role,
+      userName: '',
+      roles: [],
     });
     return;
   }
 
   response.render('commonHomePage', {
     displayPage: 'userPage',
-    userName: userInfo,
-    roles: role,
+    userName: request[dbConfig.colUserName],
+    roles: detectUserRole(request.userInfo),
   });
 }

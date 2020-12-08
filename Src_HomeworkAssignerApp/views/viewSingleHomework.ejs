@@ -1,0 +1,76 @@
+<html>
+  <%- include('headerIncludes'); -%>
+  <body>
+    <%- include('navbar', {displayPage: 'userPage', userName: userData[dbConfig.colUserName], roles: [userData[dbConfig.colRole], userData[dbConfig.colAdmin]]}); -%>
+    <div class="jumbotron cust-jumbotron justify-content-center">
+      <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
+            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
+            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
+            vestibulum.
+      </p>
+    </div>
+
+    <!--
+      homeworkData,
+        userData: request.userInfo,
+        dbConfig: db_config,
+    -->
+
+    <!--Display all the important info as one liners-->
+    <div class="container  justify-content-center ">
+      <!--for each user there will be a row-->
+        <div class="row no-gutters bg-info position-relative ml-4 cust-border-round">
+          <!--For adding homework details-->
+          <div class="col-sm-8 position-static pt-sm-2"> <!--pb-3 pr-sm-5 pt-sm-5 mt-4-->
+            <h6><i><b><%=homeworkData[dbConfig.colTitle]%></b></i></h6>
+            <ul class="list-group">
+              <!--
+                Subject, Grade, Status, Title, Homework Description, FilePath, Posted on:, Last edited on:
+              -->
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descSubjectName%>: </b></i><%=homeworkData[dbConfig.colSubjectName]%></li>
+
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descGrade%>: </b></i><%=homeworkData[dbConfig.colGrade]%></li>
+
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descCurrentStatus%>: </b></i><%=homeworkData[dbConfig.colCurrentStatus]%></li>
+<!-- 
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%#=dbConfig.descTitle%>: </b></i><%#=homeworkData[dbConfig.colTitle]%></li> -->
+
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descCreatedAt%>: </b></i><%=homeworkData[dbConfig.colCreatedAt].toDateString()%></li>
+
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descHwrkDesc%>: </b></i><%=homeworkData[dbConfig.colHwrkDesc]%></li>
+
+              <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descFilePath%>: </b></i>
+                <a href="/<%=homeworkData[dbConfig.colFilePath]%>"><%=homeworkData[dbConfig.colFilePath]%></a>
+              </li>
+
+              <% if(singleHomework[dbConfig.colEditedAt] !== undefined) {%> 
+                <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descEditedAt%>: </b></i><%=homeworkData[dbConfig.colEditedAt].toDateString()%></li>
+              <% } %> 
+            </ul>
+
+            <!--Comments display section TO DO-->
+
+          </div>
+          <!--To add the edit and delete buttons-->
+          <div class="col-sm-2 card card-body bg-info border-0">
+            <ul>
+              <li class="list-inline-item bg-transparent border-0">
+              <!-- <button class="btn btn-sm rounded-0 btn-over-stretched" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i></button> -->
+
+               <a href="/homework/<%=homeworkData[dbConfig.colID]%>/edit" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i></a>
+              </li>
+              <li class="list-inline-item bg-transparent border-0">
+                <!-- <button class="btn btn-sm rounded-0 btn-over-stretched" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash fa-lg"></i>  </button> -->
+                <a href="/homework/<%=homeworkData[dbConfig.colID]%>/delete" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash fa-lg"></i></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </div>
+
+    
+    <%- include('footerIncludes'); -%>
+  </body>
+</html>
+
