@@ -56,10 +56,10 @@
             <div class="ml-3 mt-4">
               <!--Submit answer button-->
                <% if(userData[dbConfig.colRole] === dbConfig.roleStudent && homeworkData[dbConfig.colCurrentStatus] === dbConfig.statusActive) {%> 
-                <a href="/submit/<%=homeworkData[dbConfig.colID]%>" class="btn btn-sm btn-warning rounded-0 mb-2 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" >Submit Answer</a>
+                <a href="/homework/<%=homeworkData[dbConfig.colID]%>/submit" class="btn btn-sm btn-warning rounded-0 mb-2 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" >Submit Answer</a>
                <% } %> 
               <!--View answers button-->
-              <a href="/answer/<%=homeworkData[dbConfig.colID]%>" class="btn btn-sm btn-warning rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" >View Answer</a>
+              <a href="/homework/<%=homeworkData[dbConfig.colID]%>/answer" class="btn btn-sm btn-warning rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" >View Answer</a>
             </div>
 
           </div>         

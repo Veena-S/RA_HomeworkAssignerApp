@@ -668,8 +668,6 @@ export const submitNewAnswer = (idHomework, requestUserInfo, newAnswerInfo, newF
   cbSuccess, cbFailure) => {
   console.log(newFileData);
   console.log(newFileData !== undefined);
-  console.log(newFileData[dbConfig.fileName] !== undefined);
-  console.log(newFileData[dbConfig.fileName] !== '');
 
   let insertQuery = `INSERT INTO ${dbConfig.tableSubmissions} (${dbConfig.colHwrkID}, ${dbConfig.colStudentID}, ${dbConfig.colDesc}`;
   if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')

@@ -50,23 +50,26 @@
             <a href="/homework/<%=singleHomework[dbConfig.colID]%>" class="stretched-link"></a>
           </div>
           <!--To add the edit and delete buttons-->
-          <div class="col-sm-2 card card-body bg-info border-0">
-            <ul>
-              <li class="list-inline-item bg-transparent border-0">
-               <a href="/homework/<%=singleHomework[dbConfig.colID]%>/edit" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
-              </li>
-              <li class="list-inline-item bg-transparent border-0">
-                <form
-                  class="btn-form mr-1"
-                  action="/homework/<%=singleHomework[dbConfig.colID]%>/delete?_method=DELETE"
-                  method="POST"
-                >
-                  <button class="btn btn-sm rounded-0 btn-over-stretched" data-placement="top"><i class="fa fa-trash fa-lg"></i>Delete</button>
-                </form>
+          <% if(userData[dbConfig.colRole] === dbConfig.roleTeacher) {%> 
+            <div class="col-sm-2 card card-body bg-info border-0">
+              <ul>
+                <li class="list-inline-item bg-transparent border-0">
+                <a href="/homework/<%=singleHomework[dbConfig.colID]%>/edit" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
+                </li>
+                <li class="list-inline-item bg-transparent border-0">
+                  <form
+                    class="btn-form mr-1"
+                    action="/homework/<%=singleHomework[dbConfig.colID]%>/delete?_method=DELETE"
+                    method="POST"
+                  >
+                    <button class="btn btn-sm rounded-0 btn-over-stretched" data-placement="top"><i class="fa fa-trash fa-lg"></i>Delete</button>
+                  </form>
 
-              </li>
-            </ul>
-          </div>
+                </li>
+              </ul>
+            </div>
+          <% } %> 
+          
         </div>
       <%}); %> 
     </div>

@@ -17,14 +17,18 @@
       <h6 class="mr-3"><i class=""></i>
         User_<%=singleCommentRow[dbConfig.colCommenterID]%></h6>
 
-      <div class="media-body"><%= singleCommentRow[dbConfig.colComments] %>
+      <div class="media-body">
+        <div class="mb-1">
+          <%= singleCommentRow[dbConfig.colComments] %>
+        </div>
+        
         <ul class="list-unstyled list-inline media-detail pull-left">
           <li>
-            <i>Posted On: </i><%=singleCommentRow[dbConfig.colPostedAt].toUTCString()%>
+            <small><i>Posted On: </i><%=singleCommentRow[dbConfig.colPostedAt].toUTCString()%></small>
           </li>
           <!--TO DO: As further items in the list, can add, like icon, edit, reply-->
           <!--To add the edit and delete buttons-->
-          <div class="border-0">
+          <div class="border-0 ml-1">
             <ul>
               <li class="list-inline-item bg-transparent border-0">
                <a href="/homework/<%=homeworkData[dbConfig.colID]%>/comment/<%= singleCommentRow[dbConfig.colID] %>/edit" class="btn btn-sm rounded-0 " role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
@@ -38,8 +42,6 @@
                   <button class="btn btn-sm rounded-0 " data-placement="top"><i class="fa fa-trash fa-lg"></i> Delete</button>
                 </form>
               </li>
-
-              
             </ul>
             </div>
         </ul>

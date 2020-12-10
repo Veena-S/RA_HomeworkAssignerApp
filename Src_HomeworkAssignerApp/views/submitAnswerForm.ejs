@@ -5,9 +5,6 @@
     <!-- <div class="jumbotron cust-jumbotron justify-content-center">
       <p class="lead">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
-            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
-            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
-            vestibulum.
       </p>
     </div> -->
 
@@ -26,7 +23,7 @@
             <%- include('displayHomeworkData', {homeworkData:homeworkData, dbConfig:dbConfig}) -%>
 
             <!--Form to submit answer -->
-            <form action="/submit/<%=homeworkData[dbConfig.colID]%>" method="POST" enctype=multipart/form-data>
+            <form action="/homework/<%=homeworkData[dbConfig.colID]%>/submit" method="POST" enctype=multipart/form-data>
 
               <!--Answer Description-->
               <div class="row form-row form-group ">
@@ -45,7 +42,7 @@
               <!--Submit answer button-->
               <input type="submit" class="btn btn-sm" value="Submit">
               <!--View answers button-->
-              <input type="submit" formaction="/answer/:<%=homeworkData[dbConfig.colID]%>" class="btn btn-sm" value="View Previous Submissions">
+              <!-- <input type="submit" formaction="/homework/:<%#=homeworkData[dbConfig.colID]%>/answer" class="btn btn-sm" value="View Previous Submissions"> -->
             </form>
           </div>
         </div>

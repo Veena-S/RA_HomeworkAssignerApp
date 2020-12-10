@@ -24,7 +24,7 @@
         requesterInfo: request.userInfo,
         dbConfig,
             -->
-            <form action="/answer/<%=homeworkID%>/<%=answerData[dbConfig.colID]%>/edit?_method=PUT" method="POST" enctype=multipart/form-data>
+            <form action="/homework/<%=homeworkID%>/answer/<%=answerData[dbConfig.colID]%>/edit?_method=PUT" method="POST" enctype=multipart/form-data>
 
               <!--Created On-->
               <% if(answerData[dbConfig.colSubmittedAt] !== undefined && answerData[dbConfig.colSubmittedAt] != null && answerData[dbConfig.colSubmittedAt] !== '' ) {%> 
@@ -68,7 +68,7 @@
                 <label for="<%= dbConfig.colFilePath%>" class="col-form-label "><%= dbConfig.descFilePath%>:</label>
                 <input  type="file"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
               </div>
-              <input type="submit" class="btn btn-sm" value="Submit Answer">
+              <input type="submit" class="btn btn-sm btn-warning" value="Submit Answer">
             </form>
           </div>
         </div>

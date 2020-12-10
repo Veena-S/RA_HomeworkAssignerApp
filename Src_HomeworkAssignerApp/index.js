@@ -141,17 +141,17 @@ app.delete('/homework/:id/comment/:cmt_id/delete', handleDeleteCommentRequest);
  * Answer Submission requests
  */
 // To render answer submission form
-app.get('/submit/:id', handleDisplayAnswerSubmitFormRequest);
+app.get('/homework/:id/submit', handleDisplayAnswerSubmitFormRequest);
 // To handle POST request for answer submission
-app.post('/submit/:id', multerUpload.single(dbConfig.colFilePath), handleAnswerSubmitRequest);
+app.post('/homework/:id/submit', multerUpload.single(dbConfig.colFilePath), handleAnswerSubmitRequest);
 // To view all the answers to a homework
-app.get('/answer/:hwID', handleViewAllAnswersRequest);
+app.get('/homework/:hwID/answer', handleViewAllAnswersRequest);
 // To view a specific answer to a homework
-app.get('/answer/:hwID/:answerID', handleViewAnswerRequest);
+app.get('/homework/:hwID/answer/:answerID', handleViewAnswerRequest);
 // Edit
-app.get('/answer/:hwID/:answerID/edit', handleEditAnswerFormDisplayRequest);
-app.put('/answer/:hwID/:answerID/edit', multerUpload.single(dbConfig.colFilePath), handleEditAnswerRequest);
+app.get('/homework/:hwID/answer/:answerID/edit', handleEditAnswerFormDisplayRequest);
+app.put('/homework/:hwID/answer/:answerID/edit', multerUpload.single(dbConfig.colFilePath), handleEditAnswerRequest);
 // To delete a specific answer to a specific  homework
-app.delete('/answer/:hwID/:answerID/delete', handleDeleteAnswerRequest);
+app.delete('/homework/:hwID/answer/:answerID/delete', handleDeleteAnswerRequest);
 
 app.listen(PORT);
