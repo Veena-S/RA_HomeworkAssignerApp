@@ -20,6 +20,10 @@ INSERT INTO Users (user_name, first_name, last_name, email, password, contact_nu
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 1);
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 2);
 
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(4, 6);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(4, 2);
+
+
 INSERT INTO Homeworks (  id, subject_id, teacher_id, homework_desc, filepath, created_at, current_status, edited_at ) VALUES ();
 
 INSERT INTO Comments (  id, commenter_id, homework_id, previous_comment_id, -- in case if the current comment is a reply to aher comment
@@ -27,3 +31,6 @@ INSERT INTO Comments (  id, commenter_id, homework_id, previous_comment_id, -- i
 
 INSERT INTO Submissions (  id, homework_id, student_id, description, filepath, submitted_at   );
 
+insert into comments(commenter_id, homework_id, comments ) values (3, 1, 'Not clear ' );
+
+insert into comments(commenter_id, homework_id, previous_comment_id, comments, edited_at, like_count ) values (2, 1, 1, 'Specify', CURRENT_TIMESTAMP, 0);

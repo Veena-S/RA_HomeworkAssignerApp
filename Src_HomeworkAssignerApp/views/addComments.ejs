@@ -1,0 +1,24 @@
+<!--
+  homeworkData: homeworkData, 
+  dbConfig: dbConfig,
+  commentsList: commentsList
+-->
+
+<!--File to upload new comments added-->
+<!--Form to add comments for the specified homework-->
+<form action="/homework/<%=homeworkData[dbConfig.colID]%>/comment" method="POST">
+  <div class="container">
+    <div class="row form-row form-group">
+      <label for="<%=dbConfig.colComments%>" class="col-form-label"><b><i>Your Comments:</i></b></label>
+      <textarea
+          rows="4"
+          type="text"
+          id="<%=dbConfig.colComments%>"
+          class="form-control"
+          name="<%=dbConfig.colComments%>"
+          placeholder="Type your comments here"
+        ></textarea>
+    </div>
+    <input type="submit" class="btn btn-dark" value="Post your Comments" />
+  </div>
+</form>

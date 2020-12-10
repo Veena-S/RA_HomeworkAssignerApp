@@ -37,8 +37,8 @@
         </div>
         <% }) %>
         <!--Display Grades Selection Box-->
-        <% if(allSubjectsAndGrades.dataSubjectGrade !== undefined){ %> 
-          <%- include('gradeSelectList', {dataSubjectGrade: allSubjectsAndGrades.dataSubjectGrade, displaySubjectCombo: false}) -%>
+        <% if(allSubjectsAndGrades.dataSubjectGrade !== undefined){ %>           
+          <%- include('gradeSelectList', {dataSubjectGrade: allSubjectsAndGrades.dataSubjectGrade, displaySubjectCombo: false, distinctSubjectsList: distinctSubjectsList, existingData: undefined}) -%>          
         <% } %> 
 
         <!--Display Role list check box-->

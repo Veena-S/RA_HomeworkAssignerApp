@@ -29,10 +29,10 @@
       <% if(roles[0] === 1){ %>
       <!--if teacher-->
       <!--Display options for teacher-->
-      <%- include('teacherUserPage', {userName: userName, user: roles}); -%>
+      <%- include('teacherUserPage', {userName: userName, user: roles, isFromAdminPage: false}); -%>
       <% } else if( roles[0] === 2){ %>
       <!--Student-->
-      <%- include('studentUserPage', {userName: userName, user: roles}); -%>
+      <%- include('studentUserPage', {userName: userName, user: roles, isFromAdminPage: false}); -%>
       <% } else if( roles[0] === 3){ %>
       <!--Non teaching Staff -->
       <%- include('otherUserPage', {userName: userName, user: roles}); -%>

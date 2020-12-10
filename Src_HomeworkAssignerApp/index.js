@@ -19,12 +19,18 @@ import {
   handleDeleteHomeworkRequest,
 } from './httpHomeworkHandler.js';
 import {
-  handleNewCommentRequest, handleNewReplyCommentRequest,
-  handleEditCommentRequest,
+  handleNewCommentRequest, handleNewReplyCommentRequest, handleNewReplyCommentFormRequest,
+  //  handleEditCommentRequest, handleEditCommentFormRequest,
+  handleDeleteCommentRequest,
 } from './httpCommentHandler.js';
-import { handleDisplayAnswerSubmitFormRequest, handleAnswerSubmitRequest } from './httpSubmissionHandler.js';
+import {
+  handleDisplayAnswerSubmitFormRequest, handleAnswerSubmitRequest,
+  handleViewAllAnswersRequest, handleViewAnswerRequest, handleDeleteAnswerRequest,
+  handleEditAnswerFormDisplayRequest, handleEditAnswerRequest,
 
-import db_config from './constants.js';
+} from './httpSubmissionHandler.js';
+
+import dbConfig from './constants.js';
 
 const PORT = process.argv[2];
 
@@ -48,17 +54,24 @@ app.use(methodOverride('_method'));
 app.use(express.static('public'));
 app.use(express.static('images'));
 app.use(express.static('uploads'));
+app.use(authenticateRequestUsingCookies);
+// error handler for the throw from authentication
+app.use((err, req, res, next) => {
+  res.status(400).render('messagePage', {
+    message: err.message, userName: '', roles: [], from: 'js',
+  });
+});
 
 /**
  * Home Page
  */
-app.get('/', authenticateRequestUsingCookies, handleHomePageDisplayRequest);
+app.get('/', handleHomePageDisplayRequest);
 
 /**
  * User Account Creation, Login and Logout
  */
 // To get the list of current users in the system
-app.get('/all-users', authenticateRequestUsingCookies, handleGetAllUsersRequest);
+app.get('/all-users', handleGetAllUsersRequest);
 
 // To view the details of a user
 app.get('/user/:id/edit', handleEditUserFormDisplayRequest);
@@ -73,9 +86,9 @@ app.post('/search-user', handleSearchUserRequest);
 app.put('/user/:id/delete', handleDeleteRequest);
 
 // Render a form that will sign up a user.
-app.get('/new-user', authenticateRequestUsingCookies, handleNewUserFormDisplayRequest);
+app.get('/new-user', handleNewUserFormDisplayRequest);
 // Accept a POST request to create new user
-app.post('/new-user', authenticateRequestUsingCookies, handleNewUserCreateRequest);
+app.post('/new-user', handleNewUserCreateRequest);
 
 /**
  * User Login, logout request handling
@@ -93,23 +106,23 @@ app.delete('/logout', handleLogoutRequest);
 // To display the complete list of homework for a specific user
 // Filtering by Subject & Grade
 // Sorting by Latest order
-app.get('/list-homeworks', authenticateRequestUsingCookies, handleGetAllHomeworksByUserRequest);
+app.get('/list-homeworks', handleGetAllHomeworksByUserRequest);
 // New homework form display request
-app.get('/newhw', authenticateRequestUsingCookies, handleNewHomeworkDisplayRequest);
+app.get('/newhw', handleNewHomeworkDisplayRequest);
 // New homework submit request
-app.post('/newhw', multerUpload.single(db_config.colFilePath), authenticateRequestUsingCookies, handleNewHomeworkSubmitRequest);
+app.post('/newhw', multerUpload.single(dbConfig.colFilePath), handleNewHomeworkSubmitRequest);
 
 // For search display form
 app.get('/search-hw', handleSearchHomeworkFormDisplayRequest);
 app.post('/search-hw', handleSearchHomeworkRequest);
 
 // Display details of a homework
-app.get('homework/:id', authenticateRequestUsingCookies, handleDisplayHomeworkByIDRequest);
+app.get('/homework/:id', handleDisplayHomeworkByIDRequest);
 // Render a form to edit a homework.
-app.get('/homework/:id/edit', authenticateRequestUsingCookies, handleEditHomeworkFormDisplayRequest);
+app.get('/homework/:id/edit', handleEditHomeworkFormDisplayRequest);
 // Accept a request to edit a single homework
-app.put('/homework/:id/edit', multerUpload.single(db_config.colFilePath), authenticateRequestUsingCookies, handleEditHomeworkSubmitRequest);
-app.delete('/homework/:id/delete', authenticateRequestUsingCookies, handleDeleteHomeworkRequest);
+app.put('/homework/:id/edit', multerUpload.single(dbConfig.colFilePath), handleEditHomeworkSubmitRequest);
+app.delete('/homework/:id/delete', handleDeleteHomeworkRequest);
 
 /**
  * Comment requests handling
@@ -117,14 +130,28 @@ app.delete('/homework/:id/delete', authenticateRequestUsingCookies, handleDelete
 // New comment request
 app.post('/homework/:id/comment/', handleNewCommentRequest);
 // Replying to a comment
+app.get('/homework/:id/comment/:prev_cmt_id', handleNewReplyCommentFormRequest);
 app.post('/homework/:id/comment/:prev_cmt_id', handleNewReplyCommentRequest);
 // Comment edit request
-app.post('/homework/:id/comment/:cmt_id', handleEditCommentRequest);
+// app.get('/homework/:id/comment/:cmt_id/edit', handleEditCommentFormRequest);
+// app.put('/homework/:id/comment/:cmt_id/edit', handleEditCommentRequest);
+app.delete('/homework/:id/comment/:cmt_id/delete', handleDeleteCommentRequest);
 
 /**
  * Answer Submission requests
  */
+// To render answer submission form
 app.get('/submit/:id', handleDisplayAnswerSubmitFormRequest);
-app.post('/submit/:id', handleAnswerSubmitRequest);
+// To handle POST request for answer submission
+app.post('/submit/:id', multerUpload.single(dbConfig.colFilePath), handleAnswerSubmitRequest);
+// To view all the answers to a homework
+app.get('/answer/:hwID', handleViewAllAnswersRequest);
+// To view a specific answer to a homework
+app.get('/answer/:hwID/:answerID', handleViewAnswerRequest);
+// Edit
+app.get('/answer/:hwID/:answerID/edit', handleEditAnswerFormDisplayRequest);
+app.put('/answer/:hwID/:answerID/edit', multerUpload.single(dbConfig.colFilePath), handleEditAnswerRequest);
+// To delete a specific answer to a specific  homework
+app.delete('/answer/:hwID/:answerID/delete', handleDeleteAnswerRequest);
 
 app.listen(PORT);

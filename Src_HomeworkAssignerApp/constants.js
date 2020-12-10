@@ -1,4 +1,4 @@
-const db_config = {
+const dbConfig = {
   dbName: 'homework_assigner',
 
   tableSubjects: 'Subjects',
@@ -94,10 +94,13 @@ const db_config = {
   descStudentID: 'Student ID',
 
   colDesc: 'description',
-  descDesc: 'Description',
+  descDesc: 'Answer',
 
   colSubmittedAt: 'submitted_at',
   descSubmittedAt: 'Submitted On',
+
+  colUpdatedAt: 'updated_at',
+  descUpdatedAt: 'Updated At',
 
   roleTeacher: 1,
   roleStudent: 2,
@@ -107,8 +110,8 @@ const db_config = {
   statusActive: 'Active',
   statusClosed: 'Closed',
 
-  fileName: 'fileName',
+  fileName: 'filename',
 
 };
 
-export default db_config;
+export default dbConfig;

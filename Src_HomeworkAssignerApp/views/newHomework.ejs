@@ -13,7 +13,7 @@
       <form action="/newhw" method="POST" enctype="multipart/form-data">
         <!--Display Grades & Subjects Selection Box-->
         <% if(allSubjectsAndGrades.dataSubjectGrade !== undefined){ %> 
-          <%- include('gradeSelectList', {dataSubjectGrade: allSubjectsAndGrades.dataSubjectGrade, displaySubjectCombo: true, distinctSubjectsList: distinctSubjectsList}) -%>
+          <%- include('gradeSelectList', {dataSubjectGrade: allSubjectsAndGrades.dataSubjectGrade, displaySubjectCombo: true, distinctSubjectsList: distinctSubjectsList, existingData: undefined}) -%>    
         <% } %> 
 
         <!--Status -->
@@ -39,18 +39,6 @@
             <input  type="file"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
           </div>
         </div>
-
-        <!-- <div class="row">
-          <div class="col-sm-3">
-            <label for="<%#= dbConfig.colFilePath%>" class="col-sm-3 col-form-label "><%#= dbConfig.descFilePath%>:</label>
-          </div>
-          <div class="col-sm-8">
-            <div class="custom-file">
-              <input  type="file"  id="<%#= dbConfig.colFilePath%>" class="form-control custom-file-input" name="<%#= dbConfig.colFilePath%>" multiple />
-              <label for="<%#= dbConfig.colFilePath%>" class="custom-file-label"><%#= dbConfig.descFilePath%>:</label>
-            </div>
-          </div>
-        </div> -->
         
         <input type="submit" class="btn btn-dark" value="Submit" />
       </form>

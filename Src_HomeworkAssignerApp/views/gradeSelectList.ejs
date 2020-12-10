@@ -6,9 +6,10 @@
     <select name="grade" id="grades">
       <%dataSubjectGrade.forEach((rowGrade) => {%>
         <!--If this form is diplayed as part of editing data, make the item selected-->
-        <% if(existingData !== undefined) {%> 
+    
+        <% if((existingData !== undefined) && (existingData !== '')) {%> 
           <% if( rowGrade.grade === existingData.grade ) { %> 
-            <option value="<%=rowGrade.grade%>"><%= rowGrade.grade selected%></option>
+            <option value="<%=rowGrade.grade%>" selected><%= rowGrade.grade%></option>
           <% } else {%> 
             <option value="<%=rowGrade.grade%>"><%= rowGrade.grade %></option>            
           <% } %> 
@@ -20,7 +21,7 @@
     </select>
   </div>
 </div>
-<% if(displaySubjectCombo) {%> 
-  <%- include('subjectSelectList', {distinctSubjectsList: distinctSubjectsList, existingData: existingData}) -%>
+<% if(displaySubjectCombo === true) {%> 
+  <%- include('subjectSelectList', {distinctSubjectsList: distinctSubjectsList, existingData: existingData}); -%>
 <% } %> 
 <%}%>

@@ -1,0 +1,58 @@
+<html>
+  <%- include('headerIncludes'); -%>
+  <body>
+    <%- include('navbar', {displayPage: 'userPage', userName: userData[dbConfig.colUserName], roles: [userData[dbConfig.colRole], userData[dbConfig.colAdmin]]}); -%>
+    <!-- <div class="jumbotron cust-jumbotron justify-content-center">
+      <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
+            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
+            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
+            vestibulum.
+      </p>
+    </div> -->
+
+    <!--
+      homeworkData,
+        userData: request.userInfo,
+        dbConfig: db_config,
+    -->
+
+    <!--Display all the important info as one liners-->
+    <div class="container  justify-content-center mt-5">
+      <!--for each homework there will be a row-->
+        <div class="row no-gutters bg-info position-relative ml-4 cust-border-round">
+          <!--For adding homework details-->
+          <div class="col-sm-8 position-static pt-sm-2 justify-content-center ml-4"> <!--pb-3 pr-sm-5 pt-sm-5 mt-4-->
+            <%- include('displayHomeworkData', {homeworkData:homeworkData, dbConfig:dbConfig}) -%>
+
+            <!--Form to submit answer -->
+            <form action="/submit/<%=homeworkData[dbConfig.colID]%>" method="POST" enctype=multipart/form-data>
+
+              <!--Answer Description-->
+              <div class="row form-row form-group ">
+                <div class="col">
+                   <label for="<%= dbConfig.colDesc%>" class="col-form-label"><%= dbConfig.descDesc%>:</label>
+                   <textarea  type="text"  id="<%= dbConfig.colDesc%>" class="form-control" name="<%= dbConfig.colDesc%>"></textarea>
+                </div>
+              </div>
+
+              <!--FilePath-->
+              <div class="row form-row form-group ">
+                <label for="<%= dbConfig.colFilePath%>" class="col-form-label "><%= dbConfig.descFilePath%>:</label>
+                <input  type="file"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
+              </div>
+
+              <!--Submit answer button-->
+              <input type="submit" class="btn btn-sm" value="Submit">
+              <!--View answers button-->
+              <input type="submit" formaction="/answer/:<%=homeworkData[dbConfig.colID]%>" class="btn btn-sm" value="View Previous Submissions">
+            </form>
+          </div>
+        </div>
+    </div>
+
+    
+    <%- include('footerIncludes'); -%>
+  </body>
+</html>
+

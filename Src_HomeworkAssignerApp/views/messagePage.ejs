@@ -2,7 +2,9 @@
   <%- include('navbar', {displayPage: 'messagePage', userName: userName, user: roles}); -%>
   <div class="container">
       <div class="row">
-        <p><%=message%></p>
+        <div class="alert alert-info col-sm-4 offset-sm-4" role="alert">
+            <p><%=message%></p>
+        </div>
       </div>
     </div>
 <%  } else if(from === 'js' ){%> 
@@ -12,7 +14,10 @@
     <%- include('navbar', {displayPage: 'messagePage', userName: userName, user: roles}); -%>
     <div class="container">
       <div class="row">
-        <p><%=message%></p>
+        
+        <div class="alert alert-info col-sm-4 offset-sm-4" role="alert">
+            <p><%=message%></p>
+        </div>
       </div>
     </div>
     <%- include('footerIncludes'); -%>

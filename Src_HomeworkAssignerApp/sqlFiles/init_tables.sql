@@ -46,7 +46,8 @@ CREATE TABLE Comments (
   previous_comment_id INTEGER, -- in case if the current comment is a reply to another comment
   posted_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   comments TEXT,
-  edited_at TIMESTAMPTZ
+  edited_at TIMESTAMPTZ, 
+  like_count INTEGER
 );
 
 CREATE TABLE Submissions (
@@ -55,6 +56,6 @@ CREATE TABLE Submissions (
   student_id INTEGER,
   description TEXT,
   filepath TEXT,
-  submitted_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+  submitted_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ 
 

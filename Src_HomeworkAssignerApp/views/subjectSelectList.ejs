@@ -5,9 +5,9 @@
   <div class="col-sm-8">
     <select name="subject_name" id="subject_name">
       <%distinctSubjectsList.forEach((rowSubject) => {%>
-        <% if(existingData !=== undefinded) {%> 
+        <% if(existingData !== undefined) {%> 
           <% if( rowSubject.subject_name === existingData.subject_name ) { %> 
-            <option value="<%=rowSubject.subject_name%>"><%= rowSubject.subject_name selected%></option>
+            <option value="<%=rowSubject.subject_name%>" selected><%= rowSubject.subject_name%></option>
           <% } else {%> 
             <option value="<%=rowSubject.subject_name%>"><%= rowSubject.subject_name %></option>            
           <% } %> 

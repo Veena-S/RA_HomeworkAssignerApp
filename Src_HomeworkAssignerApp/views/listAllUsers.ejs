@@ -2,13 +2,14 @@
   <%- include('headerIncludes'); -%>
   <body>
     <%- include('navbar', {displayPage: 'userPage', userName: userName, user: roles}); -%>
-    <div class="jumbotron cust-jumbotron justify-content-center">
-      <p class="lead">
+    <div class="jumbotron cust-jumbotron justify-content-center text-center mb-3 mr-5 ml-5 p-5 border-bottom border-top">
+      <!-- <p class="lead">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
             mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
             convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
             vestibulum.
-      </p>
+      </p> -->
+      <h5>List of all Users</h5>
     </div>
     <!--Display all the important info as one liners-->
     <div class="container  justify-content-center ">
@@ -37,7 +38,7 @@
 
                   <li class="list-group-item bg-transparent border-0 py-1"><i><b><%=dbDescColNames.descRole%>: </b></i><%=(singleUserRow[dbDescColNames.colRole] === 1) ? "Teacher" : ((singleUserRow[dbDescColNames.colRole] === 2) ? "Student" : "Staff") %></li>
 
-                  <li class="list-group-item bg-transparent border-0 py-1"><i><b><%=dbDescColNames.descJoiningDate%>: </b></i><%=singleUserRow[dbDescColNames.colJoiningDate].toDateString()%></li>
+                  <li class="list-group-item bg-transparent border-0 py-1"><i><b><%=dbDescColNames.descJoiningDate%>: </b></i><%=singleUserRow[dbDescColNames.colJoiningDate].toUTCString()%></li>
 
                   <li class="list-group-item bg-transparent border-0 py-1"><i><b><%=dbDescColNames.descContactNumber%>: </b></i><%=singleUserRow[dbDescColNames.colContactNumber]%></li>
 

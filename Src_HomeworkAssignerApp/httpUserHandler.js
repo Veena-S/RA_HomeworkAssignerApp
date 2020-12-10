@@ -1,7 +1,8 @@
 import jsSHA from 'jssha';
 import dbConfig from './constants.js';
 import {
-  createNewUser, getAllSubjectAndGrades, getAllUsers, getUserInfoByGivenField,
+  createNewUser, getAllSubjectAndGrades, getAllUsers,
+  getUserInfoByGivenField, getListOfDistinctSubjects,
 } from './psqlDataHandler.js';
 
 const saltEnvVar = process.env.SALT_ENV_VAR;
@@ -103,7 +104,9 @@ export const extractLoggedInFieldDetails = (loginData) => {
 const validateAndLoginUser = (loginData, searchReturnUserInfoArray, response) => {
   if ((searchReturnUserInfoArray.length === 0) || (searchReturnUserInfoArray.length > 1))
   {
-    response.status(300).render('messagePage', { message: 'User is not found', from: 'js' });
+    response.status(300).render('messagePage', {
+      message: 'User is not found', userName: '', roles: [], from: 'js',
+    });
     return;
   }
   const userInfo = searchReturnUserInfoArray[0];
@@ -115,7 +118,9 @@ const validateAndLoginUser = (loginData, searchReturnUserInfoArray, response) =>
   if (userInfo.password !== hashedInputPassword) {
     // the error for incorrect email and incorrect password are the same for security reasons.
     // This is to prevent detection of whether a user has an account for a given service.
-    response.status(300).render('messagePage', { message: 'Login failed!', from: 'js' });
+    response.status(300).render('messagePage', {
+      message: 'Login failed!', userName: '', roles: [], from: 'js',
+    });
     return;
   }
   let loggedInUserName;
@@ -151,7 +156,7 @@ const validateAndLoginUser = (loginData, searchReturnUserInfoArray, response) =>
   });
 };
 
-const displayNewUserForm = (allSubjectsAndGrades, dbUserInfo, response) => {
+const displayNewUserForm = (allSubjectsAndGrades, distinctSubjectsList, dbUserInfo, response) => {
   const userTableColNames = {
     [dbConfig.descUserName]: dbConfig.colUserName,
     [dbConfig.descInstID]: dbConfig.colInstID,
@@ -184,6 +189,7 @@ const displayNewUserForm = (allSubjectsAndGrades, dbUserInfo, response) => {
   response.render('newUserForm', {
     userTableColNames,
     allSubjectsAndGrades,
+    distinctSubjectsList,
     userName: dbUserInfo[dbConfig.colUserName],
     roles: detectUserRole(dbUserInfo),
     newUserRoles,
@@ -222,18 +228,31 @@ export const handleNewUserFormDisplayRequest = (request, response) => {
   const resValidity = isRequestUserAmin(request);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
   // Get all the existing Subjects and respective grades
   getAllSubjectAndGrades(
     (allSubjectsAndGrades) => {
-      displayNewUserForm(allSubjectsAndGrades, request.userInfo, response);
+      getListOfDistinctSubjects((distinctSubjectsList) => {
+        displayNewUserForm(allSubjectsAndGrades, distinctSubjectsList, request.userInfo, response);
+      },
+      (subError) => {
+        console.log(subError);
+        response.status(300).render('messagePage',
+          {
+            message: 'New user creation failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+          });
+      });
     },
     (error) => {
       console.log(error);
-      response.status(300).render('messagePage', { message: 'New user creation failed', from: 'js' });
+      response.status(300).render('messagePage', {
+        message: 'New user creation failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     },
   );
 };
@@ -243,7 +262,9 @@ export const handleNewUserCreateRequest = (request, response) => {
   const resValidity = isRequestUserAmin(request);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
@@ -260,7 +281,9 @@ export const handleNewUserCreateRequest = (request, response) => {
     (error) => {
       console.log(error);
       response.status(300).render('messagePage',
-        { message: 'No existing users found!!', from: 'js' }); });
+        {
+          message: 'No existing users found!!', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+        }); });
 };
 
 export const handleEditUserFormDisplayRequest = (request, response) => {
@@ -301,7 +324,9 @@ export const handleLoginRquest = (request, response) => {
   if (fieldData.fieldName === '' || fieldData.fieldValue === '')
   {
     response.status(300).render('messagePage',
-      { message: 'Please login with User Name or email!!', from: 'js' });
+      {
+        message: 'Please login with User Name or email!!', userName: '', roles: [], from: 'js',
+      });
     return;
   }
 
@@ -310,7 +335,9 @@ export const handleLoginRquest = (request, response) => {
   },
   (searchError) => {
     console.log('Error occurred while logging in', searchError.stack);
-    response.status(300).render('messagePage', { message: 'Error occurred while logging in', from: 'js' });
+    response.status(300).render('messagePage', {
+      message: 'Error occurred while logging in', userName: '', roles: [], from: 'js',
+    });
   });
 };
 
@@ -320,15 +347,22 @@ export const handleLogoutRequest = (request, response) => {
   response.clearCookie('loggedInBy');
   response.clearCookie('loggedInSession');
   response.clearCookie('userInfo');
-  response.send('Logged out');
+  response.render('commonHomePage', {
+    displayPage: 'homePage',
+    userName: '',
+    roles: [],
+  });
 };
 
 // To get the list of current users in the system
 export const handleGetAllUsersRequest = (request, response) => {
+  console.log('handleGetAllUsersRequest');
   const resValidity = isRequestUserAmin(request);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
@@ -336,7 +370,9 @@ export const handleGetAllUsersRequest = (request, response) => {
     (searchResultRows) => { displayAllUsersList(searchResultRows, request.userInfo, response); },
     (searchError) => {
       console.log(searchError);
-      response.status(300).render('messagePage', { message: 'No existing users found!!', from: 'js' }); },
+      response.status(300).render('messagePage', {
+        message: 'No existing users found!!', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      }); },
   );
 };
 

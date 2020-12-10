@@ -30,7 +30,7 @@
       </div>
       <!--Check whether the user is a teacher also-->
       <% if(roles[0] === 1) {%> 
-        <%- include('adminTeacherUserPage') -%> ;
+        <%- include('teacherUserPage', {userName: userName, user: roles, isFromAdminPage: true}) -%> ;
       <% } %> 
     </div>
     <div class="col-sm-2"></div>

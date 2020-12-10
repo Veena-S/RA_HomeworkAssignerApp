@@ -178,12 +178,66 @@ export const getAllUsers = (cbSuccess, cbFailure) => {
 };
 
 // Function to get all the homeworks created by the given teacher_id
-export const getAllHomeworkByTeacherID = (idTeacher, cbSuccess, cbFailure) => {
-  const selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colTeacherID} = ${idTeacher}`;
-  console.log(selectQuery);
-  pool.query(selectQuery)
-    .then((searchResult) => cbSuccess(searchResult.rows))
-    .catch((searchError) => cbFailure(searchError));
+export const getAllHomeworkByUserID = (userInfo, subjectList, cbSuccess, cbFailure) => {
+  let selectQuery = '';
+  if (userInfo[dbConfig.colRole] === dbConfig.roleTeacher)
+  {
+    // If the user is a teacher, search with teacher id
+    selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colTeacherID} = ${userInfo[dbConfig.colID]}`;
+    console.log(selectQuery);
+    pool.query(selectQuery)
+      .then((searchResult) => {
+        console.log(searchResult.rows);
+        cbSuccess(searchResult.rows);
+      })
+      .catch((searchError) => cbFailure(searchError));
+  }
+  else if (userInfo[dbConfig.colRole] === dbConfig.roleStudent && subjectList.length !== 0)
+  {
+    // Prepare the array of subject IDs
+    const subjectIDArray = [];
+    subjectList.forEach((item) => {
+      subjectIDArray.push(item[dbConfig.colID]);
+    });
+    console.log(subjectIDArray);
+    // If the user is a student, search with the subject id
+    let queryCounter = 0;
+    const resSubjectRows = [];
+    subjectIDArray.forEach((subID) => {
+      console.log(`queryCounter: ${queryCounter}`);
+
+      selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colSubID} = ${subID}`;
+      console.log(selectQuery);
+      pool.query(selectQuery)
+        .then((res) => {
+          queryCounter += 1;
+          console.log(`queryCounter incremented: ${queryCounter}`);
+          if (res.rowCount > 0)
+          {
+            resSubjectRows.push(res.rows[0]);
+          }
+          if (queryCounter === subjectIDArray.length)
+          {
+            console.log(`queryCounter sending cbSuccess: ${queryCounter}`);
+            console.log(resSubjectRows);
+            cbSuccess(resSubjectRows);
+          }
+        })
+        .catch((err) => {
+          queryCounter += 1;
+          console.log(`queryCounter incremented: ${queryCounter}`);
+          console.log(err);
+          if (queryCounter === subjectIDArray.length)
+          {
+            console.log(resSubjectRows);
+            cbSuccess(resSubjectRows);
+          }
+        });
+    });
+  }
+  else {
+    // cbSuccess([]);
+  }
 };
 
 // Function to find the role and check whether the new user has admin privilege or not
@@ -382,6 +436,10 @@ export const deleteUserByUserID = (userID, cbSuccess, cbFailure) => {
     .catch((deleteError) => cbFailure(deleteError));
 };
 
+/*
+ * Homeworks table
+ */
+
 // Function to get all the homework associated with the specified user
 export const getAllHomeworkByUser = (userInfo, cbSuccess, cbFailure) => {
   // 1. Get the id of the user, which should be a teacher. i.e. teacher_id in Homeworks table
@@ -394,10 +452,12 @@ export const getAllHomeworkByUser = (userInfo, cbSuccess, cbFailure) => {
   getSubjectDetailsByUserID(userID,
     ((subjectList) => {
       // 3. Get All the list of assignments for this user
-      getAllHomeworkByTeacherID(userID,
+      getAllHomeworkByUserID(userInfo, subjectList,
         ((homeworkList) => {
+          console.log('homeworkList', homeworkList);
           // Update the respective subject and grade also in the final homework list
           homeworkList.forEach((eachHomework) => {
+            console.log(`eachHomework: ${eachHomework}`);
             // Find the details corresponding to the subject ID
             const hwSubID = eachHomework[dbConfig.colSubID];
             const subInfo = subjectList.find((element) => (element[dbConfig.colID] === hwSubID));
@@ -447,7 +507,19 @@ export const getHomeworkByID = (homeworkID, cbSuccess, cbFailure) => {
 // Function to insert data into homework table. no other queries
 const insertDataIntoHomeWorkTable = (requestUserInfo, newHomeWorkInfo, newFileData, subjectID,
   cbSuccess, cbFailure) => {
-  const insertHomeworkQuery = `INSERT INTO ${dbConfig.tableHomeworks} (${dbConfig.colSubID}, ${dbConfig.colTeacherID}, ${dbConfig.colTitle}, ${dbConfig.colHwrkDesc}, ${dbConfig.colFilePath}, ${dbConfig.colCurrentStatus}) VALUES (${subjectID}, ${requestUserInfo[dbConfig.colID]}, '${newHomeWorkInfo[dbConfig.colTitle]}', '${newHomeWorkInfo[dbConfig.colHwrkDesc]}', '${newFileData[dbConfig.fileName]}', '${dbConfig.statusActive}') RETURNING *`;
+  let insertHomeworkQuery = `INSERT INTO ${dbConfig.tableHomeworks} (${dbConfig.colSubID}, ${dbConfig.colTeacherID}, ${dbConfig.colTitle}, ${dbConfig.colHwrkDesc}, ${dbConfig.colCurrentStatus})`;
+  if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')
+  {
+    insertHomeworkQuery += `, ${dbConfig.colFilePath}`;
+  }
+  insertHomeworkQuery += ` VALUES (${subjectID}, ${requestUserInfo[dbConfig.colID]}, '${newHomeWorkInfo[dbConfig.colTitle]}', '${newHomeWorkInfo[dbConfig.colHwrkDesc]}', '${dbConfig.statusActive}'`;
+
+  if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')
+  {
+    insertHomeworkQuery += `, '${newFileData[dbConfig.fileName]}'`;
+  }
+
+  insertHomeworkQuery += ') RETURNING *';
 
   console.log(insertHomeworkQuery);
 
@@ -491,13 +563,16 @@ export const createNewHomework = (requestUserInfo, newHomeWorkInfo, newFileData,
     ((searchError) => { cbFailure(searchError); }));
 };
 
-const updateDataIntoHomeWorkTable = (requestUserInfo, updatedHomeWorkInfo, updatedFileData,
+const updateDataIntoHomeWorkTable = (hwID, requestUserInfo, updatedHomeWorkInfo, updatedFileData,
   subjectID, cbSuccess, cbFailure) => {
-  let updateHomeworkQuery = `UPDATE TABLE ${dbConfig.tableHomeworks} SET 
-  ${dbConfig.colSubID} = ${subjectID}, ${dbConfig.colTeacherID} = ${requestUserInfo[dbConfig.colID]}, ${dbConfig.colTitle} = '${updatedHomeWorkInfo[dbConfig.colTitle]}', ${dbConfig.colHwrkDesc} = '${updatedHomeWorkInfo[dbConfig.colHwrkDesc]}', ${dbConfig.colCurrentStatus} = '${updatedHomeWorkInfo[dbConfig.colCurrentStatus]}`;
-  if (updatedFileData[dbConfig.fileName] !== undefined && updatedFileData[dbConfig.fileName] !== '')
-  { updateHomeworkQuery += `, ${dbConfig.colFilePath} = '${updatedFileData[dbConfig.fileName]}'`; }
-  updateHomeworkQuery += ' ) RETURNING *';
+  let updateHomeworkQuery = `UPDATE ${dbConfig.tableHomeworks} SET 
+  ${dbConfig.colSubID} = ${subjectID}, ${dbConfig.colTeacherID} = ${requestUserInfo[dbConfig.colID]}, ${dbConfig.colTitle} = '${updatedHomeWorkInfo[dbConfig.colTitle]}', ${dbConfig.colHwrkDesc} = '${updatedHomeWorkInfo[dbConfig.colHwrkDesc]}', ${dbConfig.colCurrentStatus} = '${updatedHomeWorkInfo[dbConfig.colCurrentStatus]}', ${dbConfig.colEditedAt} = CURRENT_TIMESTAMP`;
+
+  if (updatedFileData !== undefined && updatedFileData[dbConfig.fileName] !== '')
+  {
+    updateHomeworkQuery += `, ${dbConfig.colFilePath} = '${updatedFileData[dbConfig.fileName]}'`;
+  }
+  updateHomeworkQuery += ` WHERE ${dbConfig.colID} = ${hwID} RETURNING *`;
 
   console.log(updateHomeworkQuery);
 
@@ -512,7 +587,7 @@ const updateDataIntoHomeWorkTable = (requestUserInfo, updatedHomeWorkInfo, updat
 };
 
 // Function to update a homework
-export const updateHomework = (requestUserInfo, updatedHomeWorkInfo, updatedFileData,
+export const updateHomework = (hwID, requestUserInfo, updatedHomeWorkInfo, updatedFileData,
   cbSuccess, cbFailure) => {
   getSubjectIDByGradeAndSubject(updatedHomeWorkInfo[dbConfig.colGrade],
     updatedHomeWorkInfo[dbConfig.colSubjectName],
@@ -523,7 +598,7 @@ export const updateHomework = (requestUserInfo, updatedHomeWorkInfo, updatedFile
         insertNewSubjectGradeData(updatedHomeWorkInfo[dbConfig.colSubjectName],
           updatedHomeWorkInfo[dbConfig.colGrade], requestUserInfo[dbConfig.colID],
           ((insertSubjectResult) => {
-            updateDataIntoHomeWorkTable(requestUserInfo, updatedHomeWorkInfo,
+            updateDataIntoHomeWorkTable(hwID, requestUserInfo, updatedHomeWorkInfo,
               updatedFileData, insertSubjectResult, cbSuccess, cbFailure);
           }),
           ((insertSubjectError) => { cbFailure(insertSubjectError);
@@ -532,7 +607,7 @@ export const updateHomework = (requestUserInfo, updatedHomeWorkInfo, updatedFile
       else {
         // Subject ID is in the search result.
         // Insert new data
-        updateDataIntoHomeWorkTable(requestUserInfo, updatedHomeWorkInfo,
+        updateDataIntoHomeWorkTable(hwID, requestUserInfo, updatedHomeWorkInfo,
           updatedFileData, searchResult[0][dbConfig.colID], cbSuccess, cbFailure);
       }
     }),
@@ -561,5 +636,255 @@ export const deleteHomeworkByGivenField = (fieldName, fieldValue, cbSuccess, cbF
     .then((deleteResult) => {
       cbSuccess(deleteResult);
     })
+    .catch((deleteError) => { cbFailure(deleteError); });
+};
+
+/**
+ * Submissions table
+ */
+
+// This function checks whether this student can submit answer to this homework or not.
+// Done by checking the subject-id & user-id mapping in User_Subject table
+export const validateStudentPermissionToHomework = (idHomework, studentInfo,
+  cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT * FROM ${dbConfig.tableUserSubjects} WHERE ${dbConfig.colUserID} = ${studentInfo[dbConfig.colID]} AND ${dbConfig.colSubID} IN (SELECT ${dbConfig.colSubID} FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.tableHomeworks}.${dbConfig.colID} = ${idHomework})`;
+  console.log(selectQuery);
+
+  pool.query(selectQuery)
+    .then((searchResult) => {
+      if (searchResult.rowCount === 0)
+      {
+        cbFailure(searchResult);
+        return;
+      }
+      cbSuccess(searchResult.rows);
+    })
+    .catch((searchError) => {
+      cbFailure(searchError);
+    });
+};
+
+export const submitNewAnswer = (idHomework, requestUserInfo, newAnswerInfo, newFileData,
+  cbSuccess, cbFailure) => {
+  console.log(newFileData);
+  console.log(newFileData !== undefined);
+  console.log(newFileData[dbConfig.fileName] !== undefined);
+  console.log(newFileData[dbConfig.fileName] !== '');
+
+  let insertQuery = `INSERT INTO ${dbConfig.tableSubmissions} (${dbConfig.colHwrkID}, ${dbConfig.colStudentID}, ${dbConfig.colDesc}`;
+  if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')
+  {
+    insertQuery += `, ${dbConfig.colFilePath}`;
+  }
+  insertQuery += `) VALUES (${idHomework}, ${requestUserInfo[dbConfig.colID]}, '${newAnswerInfo[dbConfig.colDesc]}'`;
+  if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')
+  {
+    insertQuery += `, '${newFileData[dbConfig.fileName]}'`;
+  }
+  insertQuery += ') RETURNING *';
+
+  console.log(insertQuery);
+  pool.query(insertQuery)
+    .then((insertResult) => {
+      if (insertResult.rowCount === 0)
+      {
+        cbFailure('Can\'t find the newly submitted answer');
+        return;
+      }
+      cbSuccess(insertResult.rows[0]);
+    })
+    .catch((insertError) => {
+      console.log(insertError);
+      cbFailure(insertError);
+    });
+};
+
+// This function checks whether the given user is allowed to access the requested answer
+export const validateUserPermission = (userInfo, homeworkID, cbSuccess, cbFailure) => {
+  // If the user is a teacher, check whether the specified homeworkID is made by that user.
+  // If yes, access is granted
+  if (userInfo[dbConfig.colRole] === dbConfig.roleTeacher)
+  {
+    const selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colTeacherID} = ${userInfo[dbConfig.colID]} AND ${dbConfig.colID} = ${homeworkID}`;
+    console.log(selectQuery);
+    pool.query(selectQuery)
+      .then((searchResult) => {
+        if (searchResult.rowCount === 0)
+        {
+          cbFailure(searchResult);
+          return;
+        }
+        cbSuccess(searchResult.rows[0]);
+      })
+      .catch((searchError) => { cbFailure(searchError); });
+  }
+  // If the user is a student, as of now no other verification is done.
+  // Because, the select query to get answer will fail on it's own
+  // if the homeworkID and StudentID deon't match in the Submissions table
+};
+
+export const getAllSubmittedAnswersByStudentID = (homeworkID, studentUserInfo,
+  cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT * FROM ${dbConfig.tableSubmissions} WHERE ${dbConfig.colHwrkID} = ${homeworkID} AND ${dbConfig.colStudentID} = ${studentUserInfo[dbConfig.colID]}`;
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((searchResult) => {
+      cbSuccess(searchResult.rows);
+    })
+    .catch((searchError) => {
+      cbFailure(searchError);
+    });
+};
+
+export const getAllSubmittedAnswersByHomeworkID = (homeworkID, teacherUserInfo,
+  cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT * FROM ${dbConfig.tableSubmissions} WHERE ${dbConfig.colHwrkID} = ${homeworkID}`;
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((searchResult) => {
+      cbSuccess(searchResult.rows);
+    })
+    .catch((searchError) => {
+      cbFailure(searchError);
+    });
+};
+
+export const getStudentSubmittedAnswerByIDs = (homeworkID, answerID, studentInfo,
+  cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT * FROM ${dbConfig.tableSubmissions} WHERE ${dbConfig.colHwrkID} = ${homeworkID} AND ${dbConfig.colID} = ${answerID} AND ${dbConfig.colStudentID} = ${studentInfo[dbConfig.colID]}`;
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((searchResult) => {
+      cbSuccess(searchResult.rows);
+    })
+    .catch((searchError) => {
+      cbFailure(searchError);
+    });
+};
+
+export const getSubmittedAnswerByIDs = (homeworkID, answerID, cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT * FROM ${dbConfig.tableSubmissions} WHERE ${dbConfig.colHwrkID} = ${homeworkID} AND ${dbConfig.colID} = ${answerID}`;
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((searchResult) => {
+      cbSuccess(searchResult.rows);
+    })
+    .catch((searchError) => {
+      cbFailure(searchError);
+    });
+};
+
+export const deleteAnswerByIDs = (homeworkID, answerID, cbSuccess, cbFailure) => {
+  const deleteQuery = `DELETE FROM ${dbConfig.tableSubmissions} WHERE ${dbConfig.colHwrkID} = ${homeworkID} AND ${dbConfig.colID} = ${answerID}`;
+  console.log(deleteQuery);
+  pool.query(deleteQuery)
+    .then((deleteResult) => {
+      cbSuccess(deleteResult.rows);
+    })
+    .catch((deleteError) => {
+      cbFailure(deleteError);
+    });
+};
+
+export const editAnswerByIDs = (homeworkID, answerID, updatedData,
+  updatedFileData, userInfo, cbSuccess, cbFailure) => {
+  let updateQuery = `UPDATE ${dbConfig.tableSubmissions} SET ${dbConfig.colDesc} = '${updatedData[dbConfig.colDesc]}', ${dbConfig.colUpdatedAt} = CURRENT_TIMESTAMP`;
+  if (updatedFileData !== undefined && updatedFileData[dbConfig.fileName] !== '')
+  {
+    updateQuery += `, ${dbConfig.colFilePath} = '${updatedFileData[dbConfig.fileName]}'`;
+  }
+  updateQuery += ` WHERE  ${dbConfig.colHwrkID} = ${homeworkID} AND ${dbConfig.colID} = ${answerID} AND ${dbConfig.colStudentID} = ${userInfo[dbConfig.colID]} RETURNING *`;
+
+  console.log(updateQuery);
+
+  pool.query(updateQuery)
+    .then((updateResult) => {
+      cbSuccess(updateResult.rows[0]);
+    })
+    .catch((updateError) => {
+      cbFailure(updateError);
+    });
+};
+
+/**
+ * Comments table
+ */
+
+export const addNewCommentsForHomework = (homeworkID, commentData, commenterInfo,
+  cbSuccess, cbFailure) =>
+{
+  console.log(commenterInfo);
+
+  const insertQuery = `INSERT INTO ${dbConfig.tableComments} (${dbConfig.colCommenterID}, ${dbConfig.colHwrkID}, ${dbConfig.colComments}) VALUES (${commenterInfo[dbConfig.colID]}, ${homeworkID}, '${commentData[dbConfig.colComments]}') RETURNING *`;
+  console.log(insertQuery);
+
+  pool.query(insertQuery)
+    .then((insertResult) => {
+      if (insertResult.rowCount === 0)
+      {
+        cbFailure(insertResult);
+      }
+      cbSuccess(insertResult.rows[0]);
+    })
+    .catch((insertError) => { cbFailure(insertError); });
+};
+
+export const addReplyComment = (homeworkID, parentCommentID, commentData,
+  commenterInfo, cbSuccess, cbFailure) => {
+  const insertQuery = `INSERT INTO ${dbConfig.tableComments} (${dbConfig.colCommenterID}, ${dbConfig.colHwrkID}, ${dbConfig.colPrevCmtID}, ${dbConfig.colComments}) VALUES (${commenterInfo[dbConfig.colID]}, ${homeworkID}, ${parentCommentID}, '${commentData[dbConfig.colComments]}') RETURNING *`;
+  console.log(insertQuery);
+
+  pool.query(insertQuery)
+    .then((insertResult) => {
+      if (insertResult.rowCount === 0)
+      {
+        cbFailure(insertResult);
+      }
+      cbSuccess(insertResult.rows[0]);
+    })
+    .catch((insertError) => { cbFailure(insertError); });
+};
+
+// Function to read all the comments and it's replies to a particular homework
+export const getAllCommentsForHomework = (homeworkID, requestedUser, cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT * FROM ${dbConfig.tableComments} WHERE ${dbConfig.colHwrkID} = ${homeworkID}`;
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((selectedResult) => {
+      // Prepare a mapping between parent comment - to child comments
+      const parentChildCommentList = {};
+      if (selectedResult.rowCount > 0) {
+        selectedResult.rows.forEach((comment) => {
+          if (comment[dbConfig.colPrevCmtID] === undefined || comment[dbConfig.colPrevCmtID] === ''
+        || comment[dbConfig.colPrevCmtID] === null)
+          {
+            parentChildCommentList[comment[dbConfig.colID]] = [];
+          }
+          else // A reply to another comment
+          {
+          // Check whether ther is an entry already in the map
+          // eslint-disable-next-line no-lonely-if
+            if (comment[dbConfig.colPrevCmtID] in parentChildCommentList)
+            {
+              parentChildCommentList[comment[dbConfig.colPrevCmtID]].push(
+                parentChildCommentList[comment[dbConfig.colID]],
+              );
+            }
+            else {
+            // eslint-disable-next-line max-len
+              parentChildCommentList[comment[dbConfig.colPrevCmtID]] = [parentChildCommentList[comment[dbConfig.colID]]];
+            }
+          }
+        }); }
+      cbSuccess(selectedResult.rows, parentChildCommentList);
+    })
+    .catch((selectedError) => { cbFailure(selectedError); });
+};
+
+export const deleteComment = (homeworkID, commentID, requestUserInfo, cbSuccess, cbFailure) => {
+  const deleteQuery = `DELETE FROM ${dbConfig.tableComments} WHERE ${dbConfig.colID} = ${commentID} AND ${dbConfig.colHwrkID} = ${homeworkID} AND ${dbConfig.colCommenterID} = ${requestUserInfo[dbConfig.colID]}`;
+  console.log(deleteQuery);
+  pool.query(deleteQuery)
+    .then((deleteResult) => { cbSuccess(deleteResult); })
     .catch((deleteError) => { cbFailure(deleteError); });
 };

@@ -1,0 +1,28 @@
+<h6><i><b><%=homeworkData[dbConfig.colTitle]%></b></i></h6>
+<ul class="list-group">
+  <!--
+    Subject, Grade, Status, Title, Homework Description, FilePath, Posted on:, Last edited on:
+  -->
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descSubjectName%>: </b></i><%=homeworkData[dbConfig.colSubjectName]%></li>
+
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descGrade%>: </b></i><%=homeworkData[dbConfig.colGrade]%></li>
+
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descCurrentStatus%>: </b></i><%=homeworkData[dbConfig.colCurrentStatus]%></li>
+<!-- 
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%#=dbConfig.descTitle%>: </b></i><%#=homeworkData[dbConfig.colTitle]%></li> -->
+
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descCreatedAt%>: </b></i><%=homeworkData[dbConfig.colCreatedAt].toDateString()%></li>
+
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descHwrkDesc%>: </b></i><%=homeworkData[dbConfig.colHwrkDesc]%></li>
+
+  <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descFilePath%>: </b></i>
+    <a href="/<%=homeworkData[dbConfig.colFilePath]%>" class="text-dark"><i><%=homeworkData[dbConfig.colFilePath]%></i></a>
+  </li>
+
+  <!--
+    https://stackoverflow.com/questions/6003884/how-do-i-check-for-null-values-in-javascript
+    https://stackoverflow.com/a/6003958/7670117-->
+  <% if(homeworkData[dbConfig.colEditedAt] !== undefined && homeworkData[dbConfig.colEditedAt] != null && homeworkData[dbConfig.colEditedAt] !== '' ) {%> 
+    <li class="list-group-item list-group-item-info border-0 py-1"><i><b><%=dbConfig.descEditedAt%>: </b></i><%=homeworkData[dbConfig.colEditedAt].toUTCString()%></li>
+  <% } %> 
+</ul>

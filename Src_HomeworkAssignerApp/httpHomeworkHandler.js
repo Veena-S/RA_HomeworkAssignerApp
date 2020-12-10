@@ -1,12 +1,19 @@
 import dbConfig from './constants.js';
 import {
   getListOfDistinctSubjects, getAllSubjectAndGrades,
-  getAllHomeworkByUser, createNewHomework, getHomeworkByID, updateHomework, deleteHomeworkByID,
+  getAllHomeworkByUser, createNewHomework, getHomeworkByID, updateHomework,
+  deleteHomeworkByID, getAllCommentsForHomework,
 } from './psqlDataHandler.js';
 
 import { detectUserRole } from './httpUserHandler.js';
 
-const isRequestUserAndRoleValid = (request, roleToBeChecked) => {
+export const isRequestUserAndRoleValid = (request, roleToBeChecked) => {
+  console.log('isRequestUserAndRoleValid');
+  console.log('roleToBeChecked', roleToBeChecked);
+  console.log('request.userInfo', request.userInfo);
+
+  let validRole = false;
+
   // Validate User before processing further
   if (!request.isUserLoggedIn)
   {
@@ -16,12 +23,19 @@ const isRequestUserAndRoleValid = (request, roleToBeChecked) => {
   // Can't return at every iteration of forEach. So disabling eslint comment
   // eslint-disable-next-line consistent-return
   roleToBeChecked.forEach((role) => {
-    if (Number(request.userInfo[dbConfig.colRole]) === role)
+    if (Number(request.userInfo[dbConfig.colRole]) === Number(role))
     {
+      console.log('Roles are matching');
       // If any of the role is matching, it will return true.
+      validRole = true;
       return { isValid: true, msg: '' };
     }
   });
+  if (validRole)
+  {
+    console.log('\'return { isValid: true, msg: \'\' };\'');
+    return { isValid: true, msg: '' };
+  }
   // Here, the user doesn't match any of the roles specified
   return { isValid: false, msg: 'You are not authorized.' };
 };
@@ -29,15 +43,17 @@ const isRequestUserAndRoleValid = (request, roleToBeChecked) => {
 const displayNewHomeWorkForm = (allSubjectsAndGrades, distinctSubjectsList,
   userInfo, response) => {
   console.log('typeof allSubjectsAndGrades: ', typeof allSubjectsAndGrades);
+
   // if (allSubjectsAndGrades !== undefined)
   // {
   //   console.log(allSubjectsAndGrades);
-  //   console.log('Object.entries(allSubjectsAndGrades): ', Object.entries(allSubjectsAndGrades));
+  //   console.log('Object.entries(allSubjectsAndGrades): ',
+  //     Object.entries(allSubjectsAndGrades));
   //   console.log('Object.entries(allSubjectsAndGrades.dataSubjectGrade): ',
   //     Object.entries(allSubjectsAndGrades.dataSubjectGrade));
   //   console.log('Object.keys(allSubjectsAndGrades): ', Object.keys(allSubjectsAndGrades));
   //   console.log('typeof allSubjectsAndGrades.dataSubjectGrade: ',
-  //  typeof allSubjectsAndGrades.dataSubjectGrade);
+  //     typeof allSubjectsAndGrades.dataSubjectGrade);
   // }
 
   const renderData = {
@@ -80,7 +96,9 @@ export const handleGetAllHomeworksByUserRequest = (request, response) => {
     [dbConfig.roleTeacher, dbConfig.roleStudent]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
@@ -91,7 +109,9 @@ export const handleGetAllHomeworksByUserRequest = (request, response) => {
     }),
     ((error, errorMessage) => {
       console.log(error);
-      response.status(300).render('messagePage', { message: errorMessage, from: 'js' });
+      response.status(300).render('messagePage', {
+        message: errorMessage, userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     }));
 };
 
@@ -108,7 +128,9 @@ export const handleNewHomeworkDisplayRequest = (request, response) => {
   const resValidity = isRequestUserAndRoleValid(request, [dbConfig.roleTeacher]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
@@ -122,12 +144,16 @@ export const handleNewHomeworkDisplayRequest = (request, response) => {
       (subError) => {
         console.log(subError);
         response.status(300).render('messagePage',
-          { message: 'New homework creation failed', from: 'js' });
+          {
+            message: 'New homework creation failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+          });
       });
     },
     (error) => {
       console.log(error);
-      response.status(300).render('messagePage', { message: 'New homework creation failed', from: 'js' });
+      response.status(300).render('messagePage', {
+        message: 'New homework creation failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     },
   );
 };
@@ -141,21 +167,38 @@ export const handleNewHomeworkSubmitRequest = (request, response) => {
   const resValidity = isRequestUserAndRoleValid(request, [dbConfig.roleTeacher]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
   createNewHomework(request.userInfo, request.body, request.file,
     ((newHomeworkData) => {
+      console.log(newHomeworkData);
+
+      console.log(newHomeworkData[dbConfig.colEditedAt]);
+      console.log(typeof newHomeworkData[dbConfig.colEditedAt]);
+      // https://stackoverflow.com/a/6003958/7670117
+      // Use == instead of ===
+      if (newHomeworkData[dbConfig.colEditedAt] != null)
+      {
+        console.log(newHomeworkData[dbConfig.colEditedAt].toDateString());
+      }
+
       response.render('viewSingleHomework', {
         homeworkData: newHomeworkData,
         userData: request.userInfo,
+        commentsList: [],
+        parentChildCommentList: [],
         dbConfig,
       });
     }),
     ((dbError) => {
       console.log(dbError);
-      response.status(300).render('messagePage', { message: 'New homework creation failed', from: 'js' });
+      response.status(300).render('messagePage', {
+        message: 'New homework creation failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     }));
 };
 
@@ -166,22 +209,46 @@ export const handleDisplayHomeworkByIDRequest = (request, response) => {
     [dbConfig.roleTeacher, dbConfig.roleStudent]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
   getHomeworkByID(request.params.id,
     ((homeworkData) => {
-      // TO DO: Read Comments
+      // Read Comments
+      let commentsList;
+      let parentChildCommentList;
+      getAllCommentsForHomework(request.params.id, request.userInfo,
+        ((returnCommentsList, returnParentChildCommentList) => {
+          commentsList = returnCommentsList;
+          console.log(commentsList);
+          parentChildCommentList = returnParentChildCommentList;
 
-      response.render('viewSingleHomework', {
-        homeworkData,
-        userData: request.userInfo,
-        dbConfig,
-      });
+          response.render('viewSingleHomework', {
+            homeworkData,
+            userData: request.userInfo,
+            commentsList,
+            parentChildCommentList,
+            dbConfig,
+          });
+        }),
+        ((returnError) => {
+          console.log(returnError);
+          response.render('viewSingleHomework', {
+            homeworkData,
+            userData: request.userInfo,
+            commentsList,
+            parentChildCommentList,
+            dbConfig,
+          });
+        }));
     }),
     ((error) => {
       console.log(error);
-      response.status(300).render('messagePage', { message: 'Requested homework not found', from: 'js' });
+      response.status(300).render('messagePage', {
+        message: 'Requested homework not found', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     }));
 };
 
@@ -200,7 +267,9 @@ export const handleEditHomeworkFormDisplayRequest = (request, response) => {
   const resValidity = isRequestUserAndRoleValid(request, [dbConfig.roleTeacher]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
   getHomeworkByID(request.params.id,
@@ -220,18 +289,24 @@ export const handleEditHomeworkFormDisplayRequest = (request, response) => {
           (subError) => {
             console.log(subError);
             response.status(300).render('messagePage',
-              { message: 'New homework creation failed', from: 'js' });
+              {
+                message: 'New homework creation failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+              });
           });
         },
         (error) => {
           console.log(error);
-          response.status(300).render('messagePage', { message: 'Failed to load edit', from: 'js' });
+          response.status(300).render('messagePage', {
+            message: 'Failed to load edit', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+          });
         },
       );
     }),
     ((error) => {
       console.log(error);
-      response.status(300).render('messagePage', { message: 'Requested homework not found', from: 'js' });
+      response.status(300).render('messagePage', {
+        message: 'Requested homework not found', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     }));
 };
 
@@ -240,29 +315,66 @@ export const handleEditHomeworkSubmitRequest = (request, response) => {
   const resValidity = isRequestUserAndRoleValid(request, [dbConfig.roleTeacher]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
 
-  updateHomework(request.user, request.body, request.file,
-    (updatedHomeworkData) => {
-      response.render('viewSingleHomework', {
-        homeworkData: updatedHomeworkData,
-        userData: request.userInfo,
-        dbConfig,
-      });
-    },
-    (updateError) => {
-      console.log(updateError);
-      response.status(300).render('messagePage', { message: 'Update failed', from: 'js' });
-    });
+  // Read already existing comments for the homework
+  let commentsList;
+  let parentChildCommentList;
+  getAllCommentsForHomework(request.params.id, request.userInfo,
+    ((returnCommentsList, returnParentChildCommentList) => {
+      console.log(returnCommentsList);
+      commentsList = returnCommentsList;
+      parentChildCommentList = returnParentChildCommentList;
+
+      updateHomework(request.params.id, request.userInfo, request.body, request.file,
+        (updatedHomeworkData) => {
+          response.render('viewSingleHomework', {
+            homeworkData: updatedHomeworkData,
+            userData: request.userInfo,
+            commentsList,
+            parentChildCommentList,
+            dbConfig,
+          });
+        },
+        (updateError) => {
+          console.log(updateError);
+          response.status(300).render('messagePage', {
+            message: 'Update failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+          });
+        });
+    }),
+    ((returnError) => {
+      console.log(returnError);
+      updateHomework(request.params.id, request.userInfo, request.body, request.file,
+        (updatedHomeworkData) => {
+          response.render('viewSingleHomework', {
+            homeworkData: updatedHomeworkData,
+            userData: request.userInfo,
+            commentsList: [],
+            parentChildCommentList: {},
+            dbConfig,
+          });
+        },
+        (updateError) => {
+          console.log(updateError);
+          response.status(300).render('messagePage', {
+            message: 'Update failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+          });
+        });
+    }));
 };
 
 export const handleDeleteHomeworkRequest = (request, response) => {
   const resValidity = isRequestUserAndRoleValid(request, [dbConfig.roleTeacher]);
   if (!resValidity.isValid)
   {
-    response.status(300).render('messagePage', { message: resValidity.msg, from: 'js' });
+    response.status(300).render('messagePage', {
+      message: resValidity.msg, userName: '', roles: [], from: 'js',
+    });
     return;
   }
   deleteHomeworkByID(request.userInfo, request.params.id,
@@ -272,6 +384,8 @@ export const handleDeleteHomeworkRequest = (request, response) => {
     },
     (deleteError) => {
       console.log(deleteError);
-      response.status(300).render('messagePage', { message: 'Update failed', from: 'js' });
+      response.status(300).render('messagePage', {
+        message: 'Update failed', userName: request.userInfo[dbConfig.colUserName], roles: detectUserRole(request.userInfo), from: 'js',
+      });
     });
 };

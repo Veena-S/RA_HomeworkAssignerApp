@@ -44,36 +44,3 @@
 <!---->
 <%-include('loginForm', { displayType: 'login-done', loginFormDetails : {} })-%>
 <% }  %>
-
-<!------------------------------------------------------------------------------------------------->
-
-<!--If the user is an admin-->
-    <%# if(roles[1] === 4 ) { %>
-        <!--Check if user is a teacher with Admin privilege-->
-      <%# if(roles[0] === 1){ %>
-        <!--Display options for teacher also-->
-        <%#- include('adminTeacherUserPage', {userName: userName, user: roles}); -%>
-      <%# } else if( roles[0] === 3){ %>
-        <!--Non teaching Staff with Admin privilege-->
-        <%#- include('adminUserPage', { userName: userName, user: roles}); -%>
-      <%# } else {%>
-        <%#- include('messagePage', { message: 'Unknown User!', from: 'ejs' }); -%> 
-      <%# }%>
-      <!--user = admin ends here-->
-    <%# } else{%> 
-      <!--If the given user is not an admin-->
-      <%# if(roles[0] === 1){ %>
-      <!--if teacher-->
-      <!--Display options for teacher-->
-      <%#- include('teacherUserPage', {userName: userName, user: roles}); -%>
-      <%# } else if( roles[0] === 2){ %>
-      <!--Student-->
-      <%#- include('studentUserPage', {userName: userName, user: roles}); -%>
-      <%# } else if( roles[0] === 3){ %>
-      <!--Non teaching Staff -->
-      <%#- include('otherUserPage', {userName: userName, user: roles}); -%>
-      <%# } else {%>
-        <%#- include('messagePage', { message: 'Unknown User!', from: 'ejs' }); -%> 
-        <%#- include('otherUserPage', {userName: userName, user: roles}); -%>
-      <%#}%>
-    <%# }%><!--else (user = admin) ends here-->

@@ -1,0 +1,54 @@
+<!--
+  homeworkData: homeworkData, 
+  dbConfig: dbConfig,
+  commentsList: commentsList
+  parentChildCommentList: parentChildCommentList
+-->
+
+<div class="container">
+
+  <%- include('addComments', {homeworkData: homeworkData, dbConfig: dbConfig, commentsList: commentsList}) -%> 
+
+  <h6>Previous Comments</h6>
+
+  <% if(commentsList !== undefined && commentsList.length !== 0) {%> 
+    <% commentsList.forEach((singleCommentRow) => {%>
+    <div class="media border-top">
+      <h6 class="mr-3"><i class=""></i>
+        User_<%=singleCommentRow[dbConfig.colCommenterID]%></h6>
+
+      <div class="media-body"><%= singleCommentRow[dbConfig.colComments] %>
+        <ul class="list-unstyled list-inline media-detail pull-left">
+          <li>
+            <i>Posted On: </i><%=singleCommentRow[dbConfig.colPostedAt].toUTCString()%>
+          </li>
+          <!--TO DO: As further items in the list, can add, like icon, edit, reply-->
+          <!--To add the edit and delete buttons-->
+          <div class="border-0">
+            <ul>
+              <li class="list-inline-item bg-transparent border-0">
+               <a href="/homework/<%=homeworkData[dbConfig.colID]%>/comment/<%= singleCommentRow[dbConfig.colID] %>/edit" class="btn btn-sm rounded-0 " role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
+              </li>
+              <li class="list-inline-item bg-transparent border-0">
+                <form
+                  class="btn-form mr-1"
+                  action="/homework/<%=homeworkData[dbConfig.colID]%>/comment/<%= singleCommentRow[dbConfig.colID] %>/delete?_method=DELETE"
+                  method="POST"
+                >
+                  <button class="btn btn-sm rounded-0 " data-placement="top"><i class="fa fa-trash fa-lg"></i> Delete</button>
+                </form>
+              </li>
+
+              
+            </ul>
+            </div>
+        </ul>
+       </div>
+    </div>
+  <%}); %>
+  <% } %> 
+
+
+
+  
+</div>

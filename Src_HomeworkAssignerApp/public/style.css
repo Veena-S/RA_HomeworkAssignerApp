@@ -1,7 +1,7 @@
-body {
-  /* line-height: 1.5em !important; */
-  /* background-color: rgba(31, 241, 231, 0.301); */
-}
+/* body {
+  line-height: 1.5em !important; 
+   background-color: rgba(31, 241, 231, 0.301);
+} */
 
 .cust-nav-color {
   /* background-color: rgb(56, 87, 35) !important;
@@ -47,4 +47,10 @@ set z-index to a value > 1, and had to set position: relative; on the element to
   font-size: large;
   font-weight: 600;
   font-style: italic;
+}
+
+.custom-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
