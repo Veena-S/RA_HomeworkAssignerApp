@@ -44,18 +44,6 @@ const displayNewHomeWorkForm = (allSubjectsAndGrades, distinctSubjectsList,
   userInfo, response) => {
   console.log('typeof allSubjectsAndGrades: ', typeof allSubjectsAndGrades);
 
-  // if (allSubjectsAndGrades !== undefined)
-  // {
-  //   console.log(allSubjectsAndGrades);
-  //   console.log('Object.entries(allSubjectsAndGrades): ',
-  //     Object.entries(allSubjectsAndGrades));
-  //   console.log('Object.entries(allSubjectsAndGrades.dataSubjectGrade): ',
-  //     Object.entries(allSubjectsAndGrades.dataSubjectGrade));
-  //   console.log('Object.keys(allSubjectsAndGrades): ', Object.keys(allSubjectsAndGrades));
-  //   console.log('typeof allSubjectsAndGrades.dataSubjectGrade: ',
-  //     typeof allSubjectsAndGrades.dataSubjectGrade);
-  // }
-
   const renderData = {
     dbConfig,
     allSubjectsAndGrades,
@@ -69,14 +57,6 @@ const displayNewHomeWorkForm = (allSubjectsAndGrades, distinctSubjectsList,
 };
 
 const displayAllHomeworkList = (dataHomeworkSubject, response) => {
-  // const data = {
-  //   homeworkList: dataHomeworkSubject.homeworkList,
-  //   userData: dataHomeworkSubject.userData,
-  //   dbConfig,
-  // };
-  // // console.log(data);
-  // response.render('listAllHomeworks', data);
-
   getListOfDistinctGrades(
     (distinctGradeList) => {
       getListOfDistinctSubjects((distinctSubjectsList) => {
@@ -126,7 +106,7 @@ export const handleGetAllHomeworksByUserRequest = (request, response) => {
   console.log(request.body);
   console.log(request.query);
 
-  getAllHomeworkByUser(request.userInfo,
+  getAllHomeworkByUser(request.userInfo, request.query,
     ((dataHomeworkSubject) => {
       // homeworkList, userData;
       displayAllHomeworkList(dataHomeworkSubject, response);

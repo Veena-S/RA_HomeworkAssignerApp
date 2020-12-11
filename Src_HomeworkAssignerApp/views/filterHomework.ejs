@@ -2,7 +2,7 @@
 <!--
   distinctGradeList: distinctGradeList, distinctSubjectsList: distinctSubjectsList
 -->
-
+<!-- 
 <%if(distinctGradeList.length !== 0 ){%>
   
 <form action="/list-homeworks" method="GET">
@@ -38,10 +38,25 @@
     </div>
   </div>
 </form>
+<% } %>  -->
+
+<form action="/list-homeworks" method="GET">
+<%if(distinctGradeList.length !== 0 ){%>
+  <div class="row form-row form-group">
+  <label class="col col-form-label">Grades:</label>
+  <div class="col ">
+    <!--For each role create a check box-->
+    <% distinctGradeList.forEach((gradeRow) => { %>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="grade" value="<%=gradeRow.grade%>">
+        <label class="form-check-label" ><%=gradeRow.grade%></label>
+      </div>   
+    <% }); %>
+  </div>
+</div>
 <% } %> 
 
 <%if(distinctSubjectsList.length !== 0 ){%>
-<form action="/list-homeworks" method="GET">
 <div class="row form-row form-group">
   <label class="col col-form-label">Subjects:</label>
   <div class="col ">
@@ -53,7 +68,10 @@
       </div>   
     <% }); %>
   </div>
-  <input class="btn btn-sm btn-outline-secondary" type="submit" value="Apply">
+  
 </div>
-</form>
 <% } %> 
+
+<input class="btn btn-sm btn-outline-secondary" type="submit" value="Apply">
+</form>
+

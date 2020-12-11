@@ -162,15 +162,6 @@ export const getSubjectAndGradeBySubjectID = (subjectID, cbSuccess, cbFailure) =
     .catch((searchError) => cbFailure(searchError));
 };
 
-// Function to get the details from Subjects table with a given UserID
-export const getSubjectDetailsByUserID = (userID, cbSuccess, cbFailure) => {
-  const selectQuery = `SELECT * FROM ${dbConfig.tableSubjects} WHERE ${dbConfig.colID} IN (SELECT ${dbConfig.colSubID} FROM ${dbConfig.tableUserSubjects} WHERE ${dbConfig.colUserID} = ${userID});`;
-  console.log(selectQuery);
-  pool.query(selectQuery)
-    .then((searchResult) => { cbSuccess(searchResult.rows); })
-    .catch((searchError) => { cbFailure(searchError); });
-};
-
 /**
  *
  * @param {*} cbSuccess - Callback function to be invoked when search is success
@@ -190,29 +181,160 @@ export const getAllUsers = (cbSuccess, cbFailure) => {
     .catch((searchError) => cbFailure(searchError));
 };
 
+const constructFilterCondition = (requestQueryParams) => {
+  console.log('constructFilterCondition');
+  /**
+ Possible formats of the filter query are:
+ { grade: [ 'P2', 'P1' ], subject_name: [ 'Mathematics', 'History' ] }
+ { grade: 'P2', subject_name: 'English' }
+ */
+  let filterCondition = '';
+  if (requestQueryParams === undefined)
+  {
+    return '';
+  }
+  // Sample query:
+  // select * from subjects where (grade = 'P1' OR  grade = 'P2')
+  // AND (subject_name = 'English' OR subject_name = 'Mathematics');
+  if (requestQueryParams[dbConfig.colGrade] !== undefined)
+  {
+    const inputGrades = requestQueryParams[dbConfig.colGrade];
+    if (typeof inputGrades === 'string')
+    {
+      // There is only one checkbox selected
+      filterCondition = `( ${dbConfig.colGrade} = '${inputGrades}' )`;
+    }
+    else {
+      filterCondition += '( ';
+      inputGrades.forEach((grade, index) => {
+        filterCondition += `${dbConfig.colGrade} = '${grade}'`;
+        if (index < (inputGrades.length - 1))
+        {
+          filterCondition += ' OR ';
+        }
+      });
+      filterCondition += ' ) ';
+    }
+  }
+
+  if (requestQueryParams[dbConfig.colSubjectName] !== undefined)
+  {
+    if (filterCondition.length !== 0)
+    {
+      filterCondition += ' AND ';
+    }
+
+    const inputSubjects = requestQueryParams[dbConfig.colSubjectName];
+    if (typeof inputSubjects === 'string')
+    {
+      // There is only one checkbox selected
+      filterCondition += `( ${dbConfig.colSubjectName} = '${inputSubjects}' )`;
+    }
+    else {
+      filterCondition += '( ';
+      inputSubjects.forEach((grade, index) => {
+        filterCondition += `${dbConfig.colSubjectName} = '${grade}'`;
+        if (index < (inputSubjects.length - 1))
+        {
+          filterCondition += ' OR ';
+        }
+      });
+      filterCondition += ' ) ';
+    }
+  }
+
+  return filterCondition;
+};
+
+// Function to get the details from Subjects table with a given UserID
+export const getSubjectDetailsByUserID = (userID, requestQueryParams, cbSuccess, cbFailure) => {
+  let filterCondition = '';
+  console.log(`requestQueryParams: ${requestQueryParams}`);
+  if (requestQueryParams !== undefined)
+  {
+    filterCondition = constructFilterCondition(requestQueryParams);
+    console.log(filterCondition);
+  }
+
+  let selectQuery = `SELECT * FROM ${dbConfig.tableSubjects} WHERE ${dbConfig.colID} IN (SELECT ${dbConfig.colSubID} FROM ${dbConfig.tableUserSubjects} WHERE `;
+  selectQuery += (filterCondition.length > 0) ? (`( ${dbConfig.colUserID} = ${userID} ) AND ${filterCondition} );`) : (`${dbConfig.colUserID} = ${userID} );`);
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((searchResult) => { cbSuccess(searchResult.rows); })
+    .catch((searchError) => {
+      console.log(searchError);
+      cbFailure(searchError); });
+};
+
 // Function to get all the homeworks created by the given teacher_id
-export const getAllHomeworkByUserID = (userInfo, subjectList, cbSuccess, cbFailure) => {
+export const getAllHomeworkByUserID = (userInfo, subjectList, requestQueryParams,
+  cbSuccess, cbFailure) => {
   let selectQuery = '';
+  // Prepare the array of subject IDs
+  const subjectIDArray = [];
+  subjectList.forEach((item) => {
+    subjectIDArray.push(item[dbConfig.colID]);
+  });
+  console.log(subjectIDArray);
   if (userInfo[dbConfig.colRole] === dbConfig.roleTeacher)
   {
     // If the user is a teacher, search with teacher id
-    selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colTeacherID} = ${userInfo[dbConfig.colID]}`;
-    console.log(selectQuery);
-    pool.query(selectQuery)
-      .then((searchResult) => {
-        console.log(searchResult.rows);
-        cbSuccess(searchResult.rows);
-      })
-      .catch((searchError) => cbFailure(searchError));
+    if (subjectIDArray.length === 0)
+    {
+      if (requestQueryParams !== undefined)
+      {
+        // There is no matching subject id for the query given. So return from here
+        cbSuccess([]);
+        return;
+      }
+      selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colTeacherID} = ${userInfo[dbConfig.colID]}`;
+      console.log(selectQuery);
+      pool.query(selectQuery)
+        .then((searchResult) => {
+        // console.log(searchResult.rows);
+          cbSuccess(searchResult.rows);
+        })
+        .catch((searchError) => {
+          console.log(searchError);
+          cbFailure(searchError); });
+    } else {
+      let queryCounter = 0;
+      const resSubjectRows = [];
+      subjectIDArray.forEach((subID) => {
+        console.log(`queryCounter: ${queryCounter}`);
+
+        selectQuery = `SELECT * FROM ${dbConfig.tableHomeworks} WHERE ${dbConfig.colTeacherID} = ${userInfo[dbConfig.colID]} AND ${dbConfig.colSubID} = ${subID}`;
+        console.log(selectQuery);
+        pool.query(selectQuery)
+          .then((res) => {
+            queryCounter += 1;
+            console.log(`queryCounter incremented: ${queryCounter}`);
+            if (res.rowCount > 0)
+            {
+              resSubjectRows.push(res.rows[0]);
+            }
+            if (queryCounter === subjectIDArray.length)
+            {
+              console.log(`queryCounter sending cbSuccess: ${queryCounter}`);
+              console.log(resSubjectRows);
+              cbSuccess(resSubjectRows);
+            }
+          })
+          .catch((err) => {
+            queryCounter += 1;
+            console.log(`queryCounter incremented: ${queryCounter}`);
+            console.log(err);
+            if (queryCounter === subjectIDArray.length)
+            {
+              console.log(resSubjectRows);
+              cbSuccess(resSubjectRows);
+            }
+          });
+      });
+    }
   }
   else if (userInfo[dbConfig.colRole] === dbConfig.roleStudent && subjectList.length !== 0)
   {
-    // Prepare the array of subject IDs
-    const subjectIDArray = [];
-    subjectList.forEach((item) => {
-      subjectIDArray.push(item[dbConfig.colID]);
-    });
-    console.log(subjectIDArray);
     // If the user is a student, search with the subject id
     let queryCounter = 0;
     const resSubjectRows = [];
@@ -454,7 +576,7 @@ export const deleteUserByUserID = (userID, cbSuccess, cbFailure) => {
  */
 
 // Function to get all the homework associated with the specified user
-export const getAllHomeworkByUser = (userInfo, cbSuccess, cbFailure) => {
+export const getAllHomeworkByUser = (userInfo, requestQueryParams, cbSuccess, cbFailure) => {
   // 1. Get the id of the user, which should be a teacher. i.e. teacher_id in Homeworks table
   const userID = userInfo[dbConfig.colID];
 
@@ -462,25 +584,23 @@ export const getAllHomeworkByUser = (userInfo, cbSuccess, cbFailure) => {
   //    Get the Subject Name for this subject ID
   //    This is for further mapping of subject_id in Homeworks table
   //    to subject Name in the display
-  getSubjectDetailsByUserID(userID,
+  getSubjectDetailsByUserID(userID, requestQueryParams,
     ((subjectList) => {
       // 3. Get All the list of assignments for this user
-      getAllHomeworkByUserID(userInfo, subjectList,
+      getAllHomeworkByUserID(userInfo, subjectList, requestQueryParams,
         ((homeworkList) => {
-          console.log('homeworkList', homeworkList);
+          // console.log('homeworkList', homeworkList);
           // Update the respective subject and grade also in the final homework list
           homeworkList.forEach((eachHomework) => {
-            console.log(`eachHomework: ${eachHomework}`);
+            // console.log(`eachHomework: ${eachHomework}`);
             // Find the details corresponding to the subject ID
             const hwSubID = eachHomework[dbConfig.colSubID];
             const subInfo = subjectList.find((element) => (element[dbConfig.colID] === hwSubID));
-            if (subInfo === undefined)
+            if (subInfo !== undefined)
             {
-              cbFailure('', 'Failed to get homework details of the user');
-              return;
+              eachHomework[dbConfig.colSubjectName] = subInfo[dbConfig.colSubjectName];
+              eachHomework[dbConfig.colGrade] = subInfo[dbConfig.colGrade];
             }
-            eachHomework[dbConfig.colSubjectName] = subInfo[dbConfig.colSubjectName];
-            eachHomework[dbConfig.colGrade] = subInfo[dbConfig.colGrade];
           });
           cbSuccess({ homeworkList, userData: userInfo });
         }),
