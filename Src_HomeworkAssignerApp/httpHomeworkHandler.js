@@ -1,6 +1,6 @@
 import dbConfig from './constants.js';
 import {
-  getListOfDistinctSubjects, getAllSubjectAndGrades,
+  getListOfDistinctSubjects, getAllSubjectAndGrades, getListOfDistinctGrades,
   getAllHomeworkByUser, createNewHomework, getHomeworkByID, updateHomework,
   deleteHomeworkByID, getAllCommentsForHomework,
 } from './psqlDataHandler.js';
@@ -69,20 +69,40 @@ const displayNewHomeWorkForm = (allSubjectsAndGrades, distinctSubjectsList,
 };
 
 const displayAllHomeworkList = (dataHomeworkSubject, response) => {
-  // console.log('userData: ', dataHomeworkSubject.userData);
-  // console.log(`${[dataHomeworkSubject.userData[db_config.colUserName],
-  // dataHomeworkSubject.userData[db_config.colRole],
-  // dataHomeworkSubject.userData[db_config.colAdmin]]}`);
+  // const data = {
+  //   homeworkList: dataHomeworkSubject.homeworkList,
+  //   userData: dataHomeworkSubject.userData,
+  //   dbConfig,
+  // };
+  // // console.log(data);
+  // response.render('listAllHomeworks', data);
 
-  const data = {
-    homeworkList: dataHomeworkSubject.homeworkList,
-    userData: dataHomeworkSubject.userData,
-    dbConfig,
-  };
-
-  // console.log(data);
-
-  response.render('listAllHomeworks', data);
+  getListOfDistinctGrades(
+    (distinctGradeList) => {
+      getListOfDistinctSubjects((distinctSubjectsList) => {
+        response.render('listAllHomeworks', {
+          homeworkList: dataHomeworkSubject.homeworkList,
+          distinctGradeList,
+          distinctSubjectsList,
+          userData: dataHomeworkSubject.userData,
+          dbConfig,
+        });
+      },
+      (subError) => {
+        console.log(subError);
+        response.status(300).render('messagePage',
+          {
+            message: 'Failed to get all the homework', userName: dataHomeworkSubject.userData[dbConfig.colUserName], roles: detectUserRole(dataHomeworkSubject.userData), from: 'js',
+          });
+      });
+    },
+    (error) => {
+      console.log(error);
+      response.status(300).render('messagePage', {
+        message: 'Failed to load homework', userName: dataHomeworkSubject.userData[dbConfig.colUserName], roles: detectUserRole(dataHomeworkSubject.userData), from: 'js',
+      });
+    },
+  );
 };
 
 // Function to get all the homework for a specific user
@@ -101,6 +121,10 @@ export const handleGetAllHomeworksByUserRequest = (request, response) => {
     });
     return;
   }
+
+  console.log(request.params);
+  console.log(request.body);
+  console.log(request.query);
 
   getAllHomeworkByUser(request.userInfo,
     ((dataHomeworkSubject) => {

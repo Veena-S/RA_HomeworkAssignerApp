@@ -1,8 +1,10 @@
-<html>
+
+	
+	<html>
   <%- include('headerIncludes'); -%>
   <body>
     <%- include('navbar', {displayPage: 'userPage', userName: userData[dbConfig.colUserName], roles: [userData[dbConfig.colRole], userData[dbConfig.colAdmin]]}); -%>
-    <div class="jumbotron cust-jumbotron justify-content-center text-center ml-5 mr-5 border-bottom border-top">
+    <div class="jumbotron cust-jumbotron justify-content-center text-center ml-5 mr-5 p-5 border-bottom border-top">
       <!-- <p class="lead">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
             mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
@@ -14,8 +16,10 @@
 
     <!--
       homeworkList: dataHomeworkSubject.homeworkList,
-        userData: dataHomeworkSubject.userData,
-        dbConfig: db_config,
+          distinctGradeList,
+          distinctSubjectsList,
+          userData: dataHomeworkSubject.userData,
+          dbConfig,
     -->
 
     <!--Display all the important info as one liners-->
@@ -25,9 +29,16 @@
             No homework is assigned to you!
         </div>
       <% } %> 
+      <div class="row">
+      <div class="col-2">
+         <!-- <%# if(distinctGradeList !== undefined){ %> 
+          <%#- include('filterHomework', {distinctGradeList: distinctGradeList, distinctSubjectsList: distinctSubjectsList}) -%>    
+        <%# } %>  -->
+      </div>
+      <div class="col-8 ">
       <!--for each user there will be a row-->
       <% homeworkList.forEach((singleHomework, index) => {%>
-        <div class="row no-gutters bg-info position-relative ml-4 mr-4 border-bottom cust-border-round">
+        <div class="row no-gutters bg-info position-relative  mr-4 border-bottom cust-border-round">
           <!--For adding image-->
           <div class="col-sm-2 mb-sm-0 p-sm-2">
             <!--img src="./images/paper_small.jpg" class="img-thumbnail w-1 rounded-circle" style="width: 50%;" alt="pencil_smile_small" data-holder-rendered="true">-->
@@ -72,6 +83,8 @@
           
         </div>
       <%}); %> 
+      </div>
+      </div>
     </div>
 
     

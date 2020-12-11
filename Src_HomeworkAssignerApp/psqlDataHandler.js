@@ -55,6 +55,7 @@ const getUserIndexInCache = (fieldName, fieldValue) => {
 // Cache to store the Subjects
 let allSubjectsAndGrades;
 let distinctSubjectsList;
+let distinctGradeList;
 
 // Function to insert a new grade-subject mapping
 export const insertNewSubjectGradeData = (subject, grade, userID, cbSuccess, cbFailure) => {
@@ -82,6 +83,18 @@ export const getListOfDistinctSubjects = (cbSuccess, cbFailure) => {
     .then((searchResult) => {
       distinctSubjectsList = searchResult.rows;
       cbSuccess(distinctSubjectsList);
+    })
+    .catch((searchError) => { cbFailure(searchError); });
+};
+
+// Function to get the list of distinct subjects already registered
+export const getListOfDistinctGrades = (cbSuccess, cbFailure) => {
+  const selectQuery = `SELECT DISTINCT ${dbConfig.colGrade} FROM ${dbConfig.tableSubjects}`;
+  console.log(selectQuery);
+  pool.query(selectQuery)
+    .then((searchResult) => {
+      distinctGradeList = searchResult.rows;
+      cbSuccess(distinctGradeList);
     })
     .catch((searchError) => { cbFailure(searchError); });
 };
