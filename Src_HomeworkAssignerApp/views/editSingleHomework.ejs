@@ -2,19 +2,15 @@
   <%- include('headerIncludes'); -%>
   <body>
     <%- include('navbar', {displayPage: 'userPage', userName: userData[dbConfig.colUserName], roles: [userData[dbConfig.colRole], userData[dbConfig.colAdmin]]}); -%>
-    <!-- <div class="jumbotron cust-jumbotron justify-content-center">
-      <p class="lead">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
-            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
-            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
-            vestibulum.
-      </p>
-    </div> -->
+    <div class="jumbotron cust-jumbotron justify-content-center  ml-5 mr-5 border-bottom border-top">
+      <h5 class="text-center">Edit Homework</h5>
+      <a href="/homework/<%=homeworkData[dbConfig.colID]%>" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-placement="top">Back</a>
+    </div>
 
     <!--Display all the important info as one liners-->
-    <div class="container  justify-content-center mt-5">
+    <div class="container  justify-content-center cust-text-color mt-5">
       <!--for each user there will be a row-->
-        <div class="row no-gutters bg-info position-relative ml-4 cust-border-round">
+        <div class="row no-gutters cust-bg-color position-relative ml-4 cust-border-round">
           <!--For adding homework details-->
           <div class="col-sm-8 position-static pt-sm-2 ml-4"> <!--pb-3 pr-sm-5 pt-sm-5 mt-4-->
 
@@ -69,7 +65,7 @@
               <!--FilePath-->
               <div class="row ">
                <label for="old_<%=dbConfig.colFilePath%>" class="col-form-label col-3">Old <%= dbConfig.descFilePath%>:</label>
-                <a href="/<%=homeworkData[dbConfig.colFilePath]%>" id="old_<%= dbConfig.colFilePath%>" download="hw_<%=homeworkData[dbConfig.colFilePath]%>" class="text-secondary col-6"><%=homeworkData[dbConfig.colFilePath]%></a>
+                <a href="/<%=homeworkData[dbConfig.colFilePath]%>" id="old_<%= dbConfig.colFilePath%>" download="hw_<%=homeworkData[dbConfig.colFilePath]%>" class="cust-text-color-light col-6"><%=homeworkData[dbConfig.colFilePath]%></a>
               </div>
 
               <div class="row form-row form-group ">
@@ -77,7 +73,7 @@
                 <input  type="file" class="col-6" id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
               </div>
 
-              <input type="submit" class="btn btn-sm btn-dark" value="Submit Homework">
+              <input type="submit" class="btn btn-sm btn-warning" value="Submit Homework">
             </form>
 
           </div>

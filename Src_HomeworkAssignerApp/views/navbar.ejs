@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark cust-nav-color">
-  <a href="/" class="navbar-brand">Logo</a>
+<nav class="row navbar navbar-expand-sm navbar-light cust-nav-color">
+  <a href="/" class="navbar-brand"><img src="/./images/homework_1.jpg" alt="HP"></a>
   <button
     class="navbar-toggler"
     data-toggle="collapse"
@@ -8,14 +8,14 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarMenu">
-    <ul class="navbar-nav ml-auto cust-nav-list">
+    <ul class="navbar-nav ml-auto ">
 
       <!--If roles is empty, it means no user is logged in-->
       <% if(roles.length === 0) {%> 
         <li class="nav-item">
         <a
           href="/login"
-          class="nav-link btn-sm cust-nav-btn"
+          class="nav-link cust-nav-btn"
           data-toggle="modal"
           data-target="#login-modal-form"
           >Login</a
@@ -26,7 +26,7 @@
           <li>
             <!-- <a href="/logout" class="nav-link btn-secondary btn-sm">Logout</a> -->
             <form action="/logout?_method=DELETE" method="POST">
-              <button class="btn btn-sm btn-outline-secondary text-left">Logout</button>
+              <button class="btn cust-nav-btn text-left">Logout</button>
             </form>
           </li>
       <%}%>

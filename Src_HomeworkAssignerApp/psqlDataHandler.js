@@ -311,12 +311,13 @@ export const getAllHomeworkByUserID = (userInfo, subjectList, requestQueryParams
             console.log(`queryCounter incremented: ${queryCounter}`);
             if (res.rowCount > 0)
             {
-              resSubjectRows.push(res.rows[0]);
+              console.log(res.rows[0]);
+              resSubjectRows.push(...res.rows);
             }
             if (queryCounter === subjectIDArray.length)
             {
               console.log(`queryCounter sending cbSuccess: ${queryCounter}`);
-              console.log(resSubjectRows);
+              console.log(`Result Count: ${resSubjectRows.length}, Subject Count: ${subjectIDArray.length}`);
               cbSuccess(resSubjectRows);
             }
           })
@@ -430,7 +431,7 @@ const mapNewUserToGradeSubjects = (inputUserInfo, newUserDBDataRows, cbSuccess, 
 
   pool.query(selectSubjectIDQuery)
     .then((selectResult) => {
-      const insertUserSubMapQuery = `INSERT INTO ${dbConfig.tableUserSubjects} (${dbConfig.colUserName}, ${dbConfig.colSubID}) VALUES ($1, $2)`;
+      const insertUserSubMapQuery = `INSERT INTO ${dbConfig.tableUserSubjects} (${dbConfig.colUserID}, ${dbConfig.colSubID}) VALUES ($1, $2)`;
       let queryDoneCounter = 0;
       selectResult.rows.forEach((singleRow) => {
         const insertValues = [newUserDBData[dbConfig.colID], singleRow[dbConfig.colID]];
@@ -640,12 +641,12 @@ export const getHomeworkByID = (homeworkID, cbSuccess, cbFailure) => {
 // Function to insert data into homework table. no other queries
 const insertDataIntoHomeWorkTable = (requestUserInfo, newHomeWorkInfo, newFileData, subjectID,
   cbSuccess, cbFailure) => {
-  let insertHomeworkQuery = `INSERT INTO ${dbConfig.tableHomeworks} (${dbConfig.colSubID}, ${dbConfig.colTeacherID}, ${dbConfig.colTitle}, ${dbConfig.colHwrkDesc}, ${dbConfig.colCurrentStatus})`;
+  let insertHomeworkQuery = `INSERT INTO ${dbConfig.tableHomeworks} (${dbConfig.colSubID}, ${dbConfig.colTeacherID}, ${dbConfig.colTitle}, ${dbConfig.colHwrkDesc}, ${dbConfig.colCurrentStatus}`;
   if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')
   {
     insertHomeworkQuery += `, ${dbConfig.colFilePath}`;
   }
-  insertHomeworkQuery += ` VALUES (${subjectID}, ${requestUserInfo[dbConfig.colID]}, '${newHomeWorkInfo[dbConfig.colTitle]}', '${newHomeWorkInfo[dbConfig.colHwrkDesc]}', '${dbConfig.statusActive}'`;
+  insertHomeworkQuery += ` ) VALUES (${subjectID}, ${requestUserInfo[dbConfig.colID]}, '${newHomeWorkInfo[dbConfig.colTitle]}', '${newHomeWorkInfo[dbConfig.colHwrkDesc]}', '${dbConfig.statusActive}'`;
 
   if (newFileData !== undefined && newFileData[dbConfig.fileName] !== '')
   {

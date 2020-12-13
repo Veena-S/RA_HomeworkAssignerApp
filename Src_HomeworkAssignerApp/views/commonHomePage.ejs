@@ -1,16 +1,27 @@
 <html>
   <%- include('headerIncludes'); -%>
   <body>
+    <div class="container-fluid">
     <% if(roles.length === 0) {%> 
+      <div class="row header justify-content-center">
+        <div class="row hdr-overlay"></div>
+        <h1
+          class="text-center align-self-center text-capitalize font-weight-bolder"
+        >
+          Homework Planner
+        </h1>
+      </div>
     <%- include('navbar', {displayPage: 'onlyHomePage', userName: userName, user: roles}); -%>
-    <div class="jumbotron cust-jumbotron">
+    <%- include('features'); -%> 
+
+    <!-- <div class="jumbotron cust-jumbotron">
       <p class="h6">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
             mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
             convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
             vestibulum.
       </p>
-    </div>
+    </div> -->
   <% } else if(roles[1] === 4 ) { %> <!--If the user is an admin-->
         <!--Check if user is a teacher with Admin privilege-->
       <% if(roles[0] === 1){ %>
@@ -42,5 +53,6 @@
     <% }%><!--else (user = admin) ends here-->
 
     <%- include('footerIncludes'); -%>
+    </div>
   </body>
 </html>

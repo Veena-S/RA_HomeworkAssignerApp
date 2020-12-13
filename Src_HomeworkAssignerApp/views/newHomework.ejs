@@ -8,7 +8,10 @@
     roles: dataValidity.loggedInUserRoles,
       -->
      <%- include('navbar', {displayPage: 'userPage', userName: userName, user: roles}); -%>
-    <h4 class="h4 text-center mt-4 mb-4">New Homework</h4>
+     <div class="jumbotron cust-jumbotron justify-content-center mb-3 mr-5 ml-5 p-5 border-bottom border-top">
+      <h5 class="text-center ">New Homework</h5>
+      <a href="/" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-placement="top">Back</a>
+    </div>
     <div class="container">
       <form action="/newhw" method="POST" enctype="multipart/form-data">
         <!--Display Grades & Subjects Selection Box-->
@@ -21,26 +24,26 @@
 
         <!--Display the items -->
         <div class="row form-row form-group">
-          <label for="<%= dbConfig.colTitle%>" class="col-sm-3 col-form-label"><%= dbConfig.descTitle%>:</label>
+          <label for="<%= dbConfig.colTitle%>" class="col-sm-3 col-form-label cust-text-color"><%= dbConfig.descTitle%>:</label>
           <div class="col-sm-8">
-            <input  type="text"  id="<%= dbConfig.colTitle%>" class="form-control" name="<%= dbConfig.colTitle%>" required />
+            <input  type="text"  id="<%= dbConfig.colTitle%>" class="form-control cust-border-round" name="<%= dbConfig.colTitle%>" required />
           </div>
         </div>
         <div class="row form-row form-group">
-          <label for="<%= dbConfig.colHwrkDesc%>" class="col-sm-3 col-form-label"><%= dbConfig.descHwrkDesc%>:</label>
+          <label for="<%= dbConfig.colHwrkDesc%>" class="col-sm-3 col-form-label cust-text-color"><%= dbConfig.descHwrkDesc%>:</label>
           <div class="col-sm-8">
-            <textarea type="text" rows="5" id="<%= dbConfig.colHwrkDesc%>" class="form-control" name="<%= dbConfig.colHwrkDesc%>"></textarea>
+            <textarea type="text" rows="5" id="<%= dbConfig.colHwrkDesc%>" class="form-control cust-border-round" name="<%= dbConfig.colHwrkDesc%>"></textarea>
           </div>
         </div>
 
         <div class="row form-row form-group ">
-          <label for="<%= dbConfig.colFilePath%>" class="col-sm-3 col-form-label "><%= dbConfig.descFilePath%>:</label>
+          <label for="<%= dbConfig.colFilePath%>" class="col-sm-3 col-form-label cust-text-color cust-text-color"><%= dbConfig.descFilePath%>:</label>
           <div class="col-sm-8 ">
-            <input  type="file"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
+            <input  type="file" class="cust-border-round"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
           </div>
         </div>
         
-        <input type="submit" class="btn btn-dark" value="Submit" />
+        <input type="submit" class="btn btn-light cust-bg-color" value="Submit" />
       </form>
     </div>
     <%- include('footerIncludes'); -%>

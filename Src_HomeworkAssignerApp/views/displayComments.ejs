@@ -30,8 +30,8 @@
           <!--To add the edit and delete buttons-->
           <div class="border-0 ml-1">
             <ul>
-              <li class="list-inline-item bg-transparent border-0">
-               <a href="/homework/<%=homeworkData[dbConfig.colID]%>/comment/<%= singleCommentRow[dbConfig.colID] %>/edit" class="btn btn-sm rounded-0 " role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
+              <li class="list-inline-item bg-transparent border-0 " >
+               <a href="/homework/<%=homeworkData[dbConfig.colID]%>/comment/<%= singleCommentRow[dbConfig.colID] %>/edit" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
               </li>
               <li class="list-inline-item bg-transparent border-0">
                 <form
@@ -39,7 +39,7 @@
                   action="/homework/<%=homeworkData[dbConfig.colID]%>/comment/<%= singleCommentRow[dbConfig.colID] %>/delete?_method=DELETE"
                   method="POST"
                 >
-                  <button class="btn btn-sm rounded-0 " data-placement="top"><i class="fa fa-trash fa-lg"></i> Delete</button>
+                  <button class="btn btn-sm rounded-0 btn-over-stretched" data-placement="top"><i class="fa fa-trash fa-lg"></i> Delete</button>
                 </form>
               </li>
             </ul>

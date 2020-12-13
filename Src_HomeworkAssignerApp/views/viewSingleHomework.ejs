@@ -2,14 +2,10 @@
   <%- include('headerIncludes'); -%>
   <body>
     <%- include('navbar', {displayPage: 'userPage', userName: userData[dbConfig.colUserName], roles: [userData[dbConfig.colRole], userData[dbConfig.colAdmin]]}); -%>
-    <div class="jumbotron cust-jumbotron justify-content-center text-center ml-5 mr-5 border-bottom border-top">
-      <!-- <p class="lead">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
-            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
-            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
-            vestibulum.
-      </p> -->
-      <h5><%=homeworkData[dbConfig.colTitle]%></h5>
+
+    <div class="jumbotron cust-jumbotron justify-content-center  ml-5 mr-5 border-bottom border-top">
+      <h5 class="text-center"><%=homeworkData[dbConfig.colTitle]%></h5>
+      <a href="/list-homeworks" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-placement="top">Back</a>
     </div>
 
     <!--
@@ -19,9 +15,8 @@
         dbConfig,
     -->
 
-    <!--Display all the important info as one liners-->
     <div class="container  justify-content-center ">
-        <div class="row no-gutters bg-info position-relative ml-5 mr-5 cust-border-round ">
+        <div class="row no-gutters cust-bg-color position-relative ml-5 mr-5 cust-border-round ">
           <!--For adding homework details-->
           <div class="col-sm-8 position-static pt-sm-2 pl-sm-5 mt-4"> <!--pb-3 pr-sm-5 pt-sm-5 -->
             <%- include('displayHomeworkData', {homeworkData:homeworkData, dbConfig:dbConfig}) -%> 
@@ -32,23 +27,22 @@
           </div>
           <!--To add the edit and delete buttons-->
           <!--These buttons should not be visible to students-->
-          <div class="col-sm-2 card card-body bg-info border-0 ml-3 mt-4">
+          <div class="col-sm-2 card card-body cust-bg-color border-0 ml-3 mt-4">
             <% if(userData[dbConfig.colRole] === dbConfig.roleTeacher) {%> 
-              <ul>
-              <li class="list-inline-item bg-transparent border-0">
-               <a href="/homework/<%=homeworkData[dbConfig.colID]%>/edit" class="btn btn-sm rounded-0 btn-over-stretched " role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
-              </li>
-              <li class="list-inline-item bg-transparent border-0">
-                <form
-                  class="btn-form mr-1"
-                  action="/homework/<%=homeworkData[dbConfig.colID]%>/delete?_method=DELETE"
-                  method="POST"
-                >
-                  <button class="btn btn-sm rounded-0 btn-over-stretched" data-placement="top"><i class="fa fa-trash fa-lg"></i> Delete</button>
-                </form>
-
-              </li>
-            </ul>
+              <ul >
+                <li class="list-inline-item bg-transparent border-0">
+                <a href="/homework/<%=homeworkData[dbConfig.colID]%>/edit" class="btn btn-sm rounded-0 btn-over-stretched " role="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-lg"></i> Edit</a>
+                </li>
+                <li class="list-inline-item bg-transparent border-0">
+                  <form
+                    class="btn-form mr-1"
+                    action="/homework/<%=homeworkData[dbConfig.colID]%>/delete?_method=DELETE"
+                    method="POST"
+                  >
+                    <button class="btn btn-sm rounded-0 btn-over-stretched" data-placement="top"><i class="fa fa-trash fa-lg"></i> Delete</button>
+                  </form>
+                </li>
+              </ul>
             <% } %> 
             
 
@@ -56,10 +50,10 @@
             <div class="ml-3 mt-4">
               <!--Submit answer button-->
                <% if(userData[dbConfig.colRole] === dbConfig.roleStudent && homeworkData[dbConfig.colCurrentStatus] === dbConfig.statusActive) {%> 
-                <a href="/homework/<%=homeworkData[dbConfig.colID]%>/submit" class="btn btn-sm btn-warning rounded-0 mb-2 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" >Submit Answer</a>
+                <a href="/homework/<%=homeworkData[dbConfig.colID]%>/submit" class="btn btn-sm  rounded-0 mb-2 btn-over-stretched border" role="button" data-toggle="tooltip" data-placement="top" >Submit Answer</a>
                <% } %> 
               <!--View answers button-->
-              <a href="/homework/<%=homeworkData[dbConfig.colID]%>/answer" class="btn btn-sm btn-warning rounded-0 btn-over-stretched" role="button" data-toggle="tooltip" data-placement="top" >View Answer</a>
+              <a href="/homework/<%=homeworkData[dbConfig.colID]%>/answer" class="btn btn-sm rounded-0 btn-over-stretched border" role="button" data-toggle="tooltip" data-placement="top" >View Answer</a>
             </div>
 
           </div>         

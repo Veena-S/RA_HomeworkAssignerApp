@@ -3,32 +3,119 @@
    background-color: rgba(31, 241, 231, 0.301);
 } */
 
-.cust-nav-color {
-  /* background-color: rgb(56, 87, 35) !important;
-  color: olive !important; */
+body {
+  color: rgba(54, 9, 52, 0.5);
+  font-family: Georgia, serif;
+}
+
+.header {
+  /* background: rgb(113, 39, 115); */
+  background-color: #420644;
+  height: 100px;
+  color: rgba(214, 152, 218, 0.877);
+  background-image: url(public/images/header-dark_school.png);
+  /* font: italic small-caps bolder 12px/30px "Lucida Calligraphy", Georgia, serif; */
+  font: italic 12px/30px "Lucida Calligraphy", Georgia, serif;
+}
+
+.hdr-overlay {
+  background-color: white;
+}
+
+/* .cust-nav-color {
+  background-color: rgb(56, 87, 35) !important;
+  color: olive !important;
   background-color: darkslategray !important;
   color: lightseagreen !important;
+} */
+
+.cust-nav-color {
+  background-color: #efadf18a;
+  border-color: #940099 !important;
+  border-bottom: 1px solid;
+  padding-top: 1px;
+}
+
+.navbar a {
+  color: #5b005e;
+  border-radius: 5%;
+}
+
+.navbar a:hover,
+.cust-nav-btn:hover {
+  background-color: #5b005e;
+  color: #dac5db8a !important;
+  border-radius: 10%;
+}
+
+.cust-text-color {
+  color: #5b005e;
+}
+
+.cust-text-color-light {
+  color: rgb(230, 213, 221);
+}
+
+.cust-bg-color {
+  background-color: #5b005e;
+  /* color: rgb(220, 187, 226); */
+  color: rgb(230, 213, 221);
+}
+
+.cust-bg-color-light {
+  background-color: rgb(230, 213, 221);
+  /* color: rgb(220, 187, 226); */
+  color: #5b005e;
 }
 
 .cust-nav-btn {
-  background-color: rgb(226, 240, 217);
-  color: rgb(15, 32, 4) !important;
+  /* border-color: #5b005e !important; */
+  color: #5b005e;
 }
 
+.cust-card-body {
+  color: #420644 !important;
+  border-color: #420644 !important;
+}
+
+.cust-list-group-item {
+  /* background-color: rgb(212, 144, 214); */
+  background-color: #420644;
+  color: rgb(218, 188, 219);
+
+  border-color: #420644;
+  margin-bottom: 2px;
+  padding-bottom: 1px;
+}
+
+/*Alternate row coloring of a bootstrap grid*/
+.list-group .cust-list-group-item:nth-of-type(even) {
+  background-color: rgb(218, 161, 226);
+  color: #420644;
+}
+
+/* .cust-nav-btn {
+  background-color: rgb(226, 240, 217);
+  color: rgb(15, 32, 4) !important;
+} */
+/* 
 .cust-nav-list {
   color: rgb(171, 224, 141) !important;
-}
+} */
 
 .cust-jumbotron {
   /* background-color: rgb(24, 49, 5);
   color: darkseagreen; */
-  background-color: #02444e;
-  color: rgb(200, 241, 241);
+  /* background-color: #02444e;
+  color: rgb(200, 241, 241); */
+  background-color: #420644;
+  color: rgb(229, 213, 230);
   margin: 0 4 0 4;
 }
 
 .cust-border-round {
-  border-radius: 4px;
+  border-radius: 10px;
+  border-color: #420644;
 }
 
 /*
@@ -37,16 +124,21 @@ set z-index to a value > 1, and had to set position: relative; on the element to
 .btn-over-stretched {
   z-index: 2;
   position: relative;
+  color: rgb(228, 208, 217);
+  border: darksalmon;
+  border-radius: 5px;
 }
 
 .btn-over-stretched:hover {
-  background-color: rgb(199, 235, 238);
+  background-color: rgb(243, 166, 202);
 }
 
 .list-group-item-action:hover {
   font-size: large;
   font-weight: 600;
   font-style: italic;
+  background-color: rgb(243, 166, 202) !important;
+  color: #420644;
 }
 
 .custom-overflow {

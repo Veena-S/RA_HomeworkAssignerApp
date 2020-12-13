@@ -2,11 +2,10 @@
   <%- include('headerIncludes'); -%>
   <body>
     <%- include('navbar', {displayPage: 'userPage', userName: userData[dbConfig.colUserName], roles: [userData[dbConfig.colRole], userData[dbConfig.colAdmin]]}); -%>
-    <!-- <div class="jumbotron cust-jumbotron justify-content-center">
-      <p class="lead">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
-      </p>
-    </div> -->
+   <div class="jumbotron cust-jumbotron justify-content-center mb-3 mr-5 ml-5 p-5 border-bottom border-top">
+      <h5 class="text-center ">New Answer</h5>
+      <a href="/homework/<%=homeworkData[dbConfig.colID]%>" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-placement="top">Back</a>
+    </div>
 
     <!--
       homeworkData,
@@ -17,7 +16,7 @@
     <!--Display all the important info as one liners-->
     <div class="container  justify-content-center mt-5">
       <!--for each homework there will be a row-->
-        <div class="row no-gutters bg-info position-relative ml-4 cust-border-round">
+        <div class="row no-gutters cust-bg-color position-relative ml-4 cust-border-round">
           <!--For adding homework details-->
           <div class="col-sm-8 position-static pt-sm-2 justify-content-center ml-4"> <!--pb-3 pr-sm-5 pt-sm-5 mt-4-->
             <%- include('displayHomeworkData', {homeworkData:homeworkData, dbConfig:dbConfig}) -%>
@@ -28,19 +27,19 @@
               <!--Answer Description-->
               <div class="row form-row form-group ">
                 <div class="col">
-                   <label for="<%= dbConfig.colDesc%>" class="col-form-label"><%= dbConfig.descDesc%>:</label>
-                   <textarea  type="text"  id="<%= dbConfig.colDesc%>" class="form-control" name="<%= dbConfig.colDesc%>"></textarea>
+                   <label for="<%= dbConfig.colDesc%>" class="col-form-label cust-text-color"><%= dbConfig.descDesc%>:</label>
+                   <textarea  type="text"  id="<%= dbConfig.colDesc%>" class="form-control cust-border-round" name="<%= dbConfig.colDesc%>"></textarea>
                 </div>
               </div>
 
               <!--FilePath-->
               <div class="row form-row form-group ">
-                <label for="<%= dbConfig.colFilePath%>" class="col-form-label "><%= dbConfig.descFilePath%>:</label>
-                <input  type="file"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
+                <label for="<%= dbConfig.colFilePath%>" class="col-form-label cust-text-color"><%= dbConfig.descFilePath%>:</label>
+                <input class="cust-border-round"  type="file"  id="<%= dbConfig.colFilePath%>" name="<%= dbConfig.colFilePath%>"/>
               </div>
 
               <!--Submit answer button-->
-              <input type="submit" class="btn btn-sm" value="Submit">
+              <input type="submit" class="btn btn-sm btn-light cust-bg-color" value="Submit">
               <!--View answers button-->
               <!-- <input type="submit" formaction="/homework/:<%#=homeworkData[dbConfig.colID]%>/answer" class="btn btn-sm" value="View Previous Submissions"> -->
             </form>

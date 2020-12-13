@@ -2,54 +2,18 @@
 <!--
   distinctGradeList: distinctGradeList, distinctSubjectsList: distinctSubjectsList
 -->
-<!-- 
-<%if(distinctGradeList.length !== 0 ){%>
-  
-<form action="/list-homeworks" method="GET">
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <label class="input-group-text" for="gradeSelect">Grade</label>
-    </div>
-    <select class="custom-select" name="grade" id="gradeSelect" aria-label="Filter with Grades">
-      <% distinctGradeList.forEach(gradeRow => {%>
-        <option value="<%=gradeRow.grade%>"><%= gradeRow.grade %></option>
-      <%}); %> 
-    </select>
-    <div class="input-group-append">
-      <input class="btn btn-sm btn-outline-secondary" type="submit" value="Apply">
-    </div>
-  </div>
-</form>
-<% } %> 
 
-<%if(distinctSubjectsList.length !== 0 ){%>
-<form action="/list-homeworks" method="GET">
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <label class="input-group-text" for="subjectSelect">Subject</label>
-    </div>
-    <select class="custom-select" name="subject_name" id="subjectSelect" aria-label="Filter with Grades">
-      <% distinctSubjectsList.forEach(subjectRow => {%>
-        <option value="<%=subjectRow.subject_name%>"><%= subjectRow.subject_name %></option>
-      <%}); %> 
-    </select>
-    <div class="input-group-append">
-      <input class="btn btn-sm btn-outline-secondary" type="submit" value="Apply">
-    </div>
-  </div>
-</form>
-<% } %>  -->
 
 <form action="/list-homeworks" method="GET">
 <%if(distinctGradeList.length !== 0 ){%>
-  <div class="row form-row form-group">
-  <label class="col col-form-label">Grades:</label>
-  <div class="col ">
+  <div class="row form-row form-group cust-border-round">
+  <label class="col-3 col-form-label cust-text-color text-wrap text-break">Grades:</label>
+  <div class="col-3">
     <!--For each role create a check box-->
     <% distinctGradeList.forEach((gradeRow) => { %>
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" name="grade" value="<%=gradeRow.grade%>">
-        <label class="form-check-label" ><%=gradeRow.grade%></label>
+        <input class="form-check-input cust-border-round" type="checkbox" name="grade" value="<%=gradeRow.grade%>">
+        <label class="form-check-label cust-text-color" ><%=gradeRow.grade%></label>
       </div>   
     <% }); %>
   </div>
@@ -58,13 +22,13 @@
 
 <%if(distinctSubjectsList.length !== 0 ){%>
 <div class="row form-row form-group">
-  <label class="col col-form-label">Subjects:</label>
-  <div class="col ">
+  <label class="col-3 col-form-label cust-text-color text-break">Subjects:</label>
+  <div class="col-3 ">
     <!--For each role create a check box-->
     <% distinctSubjectsList.forEach((subjectRow) => { %>
       <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" name="subject_name" value="<%=subjectRow.subject_name%>">
-        <label class="form-check-label" ><%=subjectRow.subject_name%></label>
+        <input class="form-check-input cust-border-round" type="checkbox" name="subject_name" value="<%=subjectRow.subject_name%>">
+        <label class="form-check-label cust-text-color" ><%=subjectRow.subject_name%></label>
       </div>   
     <% }); %>
   </div>
@@ -72,6 +36,6 @@
 </div>
 <% } %> 
 
-<input class="btn btn-sm btn-outline-secondary" type="submit" value="Apply">
+<input class="btn btn-sm btn-outline-secondary cust-bg-color" type="submit" value="Apply">
 </form>
 

@@ -2,19 +2,16 @@
   <%- include('headerIncludes'); -%>
   <body>
     <%- include('navbar', {displayPage: 'userPage', userName: requesterInfo[dbConfig.colUserName], roles: [requesterInfo[dbConfig.colRole], requesterInfo[dbConfig.colAdmin]]}); -%>
-    <!-- <div class="jumbotron cust-jumbotron justify-content-center">
-      <p class="lead">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ultricies
-            mi sit amet mollis porta. Aliquam euismod sapien vitae facilisis
-            convallis. Vivamus ut lorem sapien. Cras tristique ligula nec enim gravida
-            vestibulum.
-      </p>
-    </div> -->
+    
+    <div class="jumbotron cust-jumbotron justify-content-center  ml-5 mr-5 border-bottom border-top">
+      <h5 class="text-center">Answer</h5>
+      <a href="/homework/<%=homeworkID%>/answer/<%=answerData[dbConfig.colID]%>" class="btn btn-sm rounded-0 btn-over-stretched" role="button" data-placement="top">Back</a>
+    </div>
 
     <!--Display all the important info as one liners-->
-    <div class="container  justify-content-center mt-5">
+    <div class="container  justify-content-center cust-text-color m-5">
       <!--for each user there will be a row-->
-        <div class="row no-gutters bg-info position-relative ml-4 cust-border-round">
+        <div class="row no-gutters cust-bg-color position-relative ml-4 mr-5 cust-border-round">
           <!--For adding homework details-->
           <div class="col-sm-8 position-static pt-sm-2 ml-4"> <!--pb-3 pr-sm-5 pt-sm-5 mt-4-->
 
@@ -60,7 +57,7 @@
               <div class="row ">
                 <div class="col">
                    <label for="old_<%=dbConfig.colFilePath%>" class="col-form-label">Old <%= dbConfig.descFilePath%>:</label>
-                   <a href="/<%=answerData[dbConfig.colFilePath]%>" id="old_<%= dbConfig.colFilePath%>" download="hw_<%=answerData[dbConfig.colFilePath]%>" class="text-secondary"><%=answerData[dbConfig.colFilePath]%></a>
+                   <a href="/<%=answerData[dbConfig.colFilePath]%>" id="old_<%= dbConfig.colFilePath%>" download="hw_<%=answerData[dbConfig.colFilePath]%>" class="cust-text-color-light"><%=answerData[dbConfig.colFilePath]%></a>
                 </div>
               </div>
 

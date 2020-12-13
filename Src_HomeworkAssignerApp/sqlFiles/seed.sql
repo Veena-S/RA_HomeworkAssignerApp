@@ -1,5 +1,6 @@
 -- Subjects
 INSERT INTO Subjects (subject_name, grade ) VALUES ('English', 'P1');
+INSERT INTO Subjects (subject_name, grade ) VALUES ('English', 'S1');
 INSERT INTO Subjects (subject_name, grade ) VALUES ('English', 'P2');
 INSERT INTO Subjects (subject_name, grade ) VALUES ( 'Mathematics', 'S1');
 INSERT INTO Subjects (subject_name, grade ) VALUES ( 'Mathematics', 'S2');
@@ -19,6 +20,14 @@ INSERT INTO Users (user_name, first_name, last_name, email, password, contact_nu
 
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 1);
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 2);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 3);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 4);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 5);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 6);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 7);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 8);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 9);
+INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(1, 10);
 
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(4, 6);
 INSERT INTO User_Subjects ( user_id, subject_id ) VALUES(4, 2);
