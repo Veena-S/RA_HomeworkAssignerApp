@@ -32,7 +32,8 @@ import {
 
 import dbConfig from './constants.js';
 
-const PORT = process.argv[2];
+// const PORT = process.argv[2];
+const PORT = process.env.PORT || 3004;
 
 const app = express();
 
